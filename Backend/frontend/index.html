@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>reCAPTCHA v3 Test</title>
+
+  <!-- Google reCAPTCHA v3 script -->
+  <script src="https://www.google.com/recaptcha/api.js?render=6LcsZPEsAAAAACKHmQ_Ke2pz7I3f2IXjTVh9mtJq"></script>
+</head>
+
+<body>
+
+  <h2>reCAPTCHA v3 Demo</h2>
+
+  <button onclick="runCaptcha()">Submit Request</button>
+
+  <p id="result"></p>
+
+  <script>
+    async function runCaptcha() {
+
+      const resultBox = document.getElementById("result");
+      resultBox.innerText = "Running reCAPTCHA...";
+
+      grecaptcha.ready(function () {
+        grecaptcha.execute("6LcsZPEsAAAAACKHmQ_Ke2pz7I3f2IXjTVh9mtJq", { action: "login" })
+          .then(async function (token) {
+
+            console.log("Generated Token:", token);
+
+            // Send token to backend
+            const response = await fetch("http://localhost:3000/api/auth/verify-recaptcha", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({ token })
+            });
+
+            const data = await response.json();
+
+            console.log("Backend Response:", data);
+
+            if (data.success) {
+              resultBox.innerText = "✅ Human verified (Score: " + data.score + ")";
+            } else {
+              resultBox.innerText = "❌ Verification failed: " + data.message;
+            }
+
+          });
+      });
+
+    }
+  </script>
+
+</body>
+</html>
