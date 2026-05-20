@@ -10,11 +10,11 @@ export const Register = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [captchaQuestion, setCaptchaQuestion] = useState("");
-    const [captchaInput, setCaptchaInput] = useState("");
-    const [captchaId, setCaptchaId] = useState("");
+    // const [captchaQuestion, setCaptchaQuestion] = useState("");
+    // const [captchaInput, setCaptchaInput] = useState("");
+    // const [captchaId, setCaptchaId] = useState("");
 
-    const [message, setMessage] = useState({ type: "", text: "" });
+    // const [message, setMessage] = useState({ type: "", text: "" });
 
     const [registerUser, { isLoading }] = useRegisterUserMutation();
     const [createCaptcha] = useCreateCaptchaMutation();

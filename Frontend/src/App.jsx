@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Register } from "./containers/register";
 import {VerifyEmail} from "./containers/verifyEmail";
-import { Login } from "./pages/login";
+import { Login } from "./containers/login";
 
 
 function App() {
