@@ -4,7 +4,8 @@ export const api = createApi({
     reducerPath: 'api',
 
     baseQuery : fetchBaseQuery({
-        baseUrl : "http://localhost:3000/api/auth"
+        baseUrl : "http://localhost:3000/api/auth",
+        credentials : 'include'
     }),
 
     endpoints : (builder) => ({
@@ -49,17 +50,17 @@ export const api = createApi({
             })    
         }),
 
-        forgetPassword : builder.mutation({
+        forgotPassword : builder.mutation({
             query : (email) => ({
-                url : '/forget-password',
+                url : '/forgot-password',
                 method : "POST",
                 body : email
             })
         }),
 
-        verifyForgetPasswordOTP : builder.mutation({
+        verifyForgotPasswordOTP : builder.mutation({
             query : (data) => ({
-                url : '/verify-forget-password-otp',
+                url : '/verify-forgot-password-otp',
                 method : "POST",
                 body : data
             })
@@ -98,4 +99,4 @@ export const api = createApi({
     })
 });
 
-export const {useRegisterUserMutation, useLoginUserMutation, useRefreshTokenMutation, useVerifyEmailMutation, useResendOTPMutation, useForgetPasswordMutation, useVerifyForgetPasswordOTPMutation, useResetPasswordMutation, useCreateCaptchaMutation, useLogoutUserMutation, useLogoutFromAllDevicesMutation} = api;
+export const {useRegisterUserMutation, useLoginUserMutation, useRefreshTokenMutation, useVerifyEmailMutation, useResendOTPMutation, useForgotPasswordMutation, useVerifyForgotPasswordOTPMutation, useResetPasswordMutation, useCreateCaptchaMutation, useLogoutUserMutation, useLogoutFromAllDevicesMutation} = api;

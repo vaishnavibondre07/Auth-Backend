@@ -1,5 +1,6 @@
+import { Link } from "react-router-dom";
 import { useState } from "react";
-import { useForgetPasswordMutation, useLoginUserMutation } from "../api/api";
+import { useForgotPasswordMutation, useLoginUserMutation, useCreateCaptchaMutation } from "../api/api";
 import MessageBox from "../components/MessageBox";
 
 
@@ -15,8 +16,6 @@ export const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const [message, setMessage] = useState({ type: "", text: "" });
-
-  const 
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
@@ -45,9 +44,9 @@ export const Login = () => {
         <div className="mt-4">
           <div className="flex justify-between items-center">
             <label className="text-sm text-gray-600">Password</label>
-            <a href="#" className="text-xs text-blue-600 hover:underline">
-              Forgot Password?
-            </a>
+            <Link to="/forgot-password" className="text-blue-600 font-semibold">
+              Forgot Password?  
+            </Link>
           </div>
 
           <div className="relative mt-1">
@@ -78,7 +77,7 @@ export const Login = () => {
             />
           </div>
 
-          <span className="text-xs text-gray-500">
+          <span className="text-base text-gray-500">
             VERIFY HUMAN INTERACTION
           </span>
         </div>
@@ -110,9 +109,9 @@ export const Login = () => {
         {/* Sign up */}
         <p className="text-center text-sm text-gray-600 mt-5">
           Don’t have an account?{" "}
-          <a href="#" className="text-blue-600 font-medium hover:underline">
+          <Link to="/" className="text-blue-600 font-medium hover:underline">
             Sign Up
-          </a>
+          </Link>
         </p>
       </div>
     </div>

@@ -1,13 +1,26 @@
-const MessageBox = ({ type, text }) => {
-    const base = "p-3 rounded-md text-sm text-center font-medium";
+import { useEffect } from "react";
 
-    const styles = {
-        success: base + " bg-green-100 text-green-700",
-        error: base + " bg-red-100 text-red-700",
-        info: base + " bg-blue-100 text-blue-700",
-    };
+const MessageBox = ({ type = "success", message, onClose }) => {
+    useEffect(() => {
+        if (message) {
+            const timer = setTimeout(() => {
+                onClose();
+            }, 3000);
 
-    return <div className={styles[type] || styles.info}>{text}</div>;
+            return () => clearTimeout(timer);
+        }
+    }, [message]);
+
+    if (!message) return null;
+
+    return (
+        <div
+            className={`fixed top-5 right-5 px-4 py-3 rounded-lg shadow-lg text-white z-50
+            ${type === "error" ? "bg-red-500" : "bg-green-500"}`}
+        >
+            {message}
+        </div>
+    );
 };
 
 export default MessageBox;
