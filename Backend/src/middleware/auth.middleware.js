@@ -9,11 +9,6 @@ export async function authMiddleware(req,res,next){
 
         const token = req.cookies.accessToken;
 
-        // console.log(authHeader);
-
-        console.log("HEADERS:", req.headers);
-        // console.log("AUTH HEADER:", req.headers.authorization);
-        
         if(!token){
 
             return res.status(401).json({

@@ -4,9 +4,12 @@ import { useLoginUserMutation, useCreateCaptchaMutation, useGoogleLoginMutation}
 import MessageBox from "../components/MessageBox";
 import { validateEmail, validatePassword} from "../utils/validations";
 import { GoogleLogin } from "@react-oauth/google";
+import { useDispatch } from "react-redux";
+import { setUser } from "../features/authSlice";
 
 export const Login = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [loginUser, { isLoading }] = useLoginUserMutation();
   const [createCaptcha] = useCreateCaptchaMutation();
@@ -87,6 +90,8 @@ export const Login = () => {
         captchaId,
         captchaAnswer : captchaInput,
       }).unwrap();
+
+      dispatch(setUser(response.data));
 
       console.log(response);
 
@@ -321,7 +326,7 @@ export const Login = () => {
                                     }
                               }}
 
-                              onError={() => { setMessage({type: "error", text: err.message,});}}
+                              onError={() => { setMessage({type: "error", text: "Google login failed" });}}
                         />
                    </div>
 
@@ -332,7 +337,7 @@ export const Login = () => {
           Don’t have an account?{" "}
 
           <Link
-            to="/register"
+            to="/"
             className="text-blue-600 font-medium hover:underline"
           >
             Sign Up

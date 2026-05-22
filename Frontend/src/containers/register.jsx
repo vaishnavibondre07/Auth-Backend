@@ -271,7 +271,7 @@ export const Register = () => {
                                     }
                               }}
 
-                              onError={() => { setMessage({type: "error", text: err.message,});}}
+                              onError={() => { setMessage({type: "error", text: "Google login failed" });}}
                         />
                    </div>
 

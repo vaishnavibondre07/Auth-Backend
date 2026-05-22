@@ -15,7 +15,7 @@ import { verifyCaptcha } from "../utils/verifyCaptcha.js";
 import {validateUsername, validateEmail, validatePassword}  from "../utils/validations.js";
 
 
-const createSession = async (userId, req) => {
+const createSession = async (userId, role, req) => {
     const session = await Session.create({
         user : userId,
         refreshToken : " ",
@@ -26,7 +26,8 @@ const createSession = async (userId, req) => {
 
       const refreshToken = jwt.sign({
         id : userId,
-        sessionId : session._id
+        sessionId : session._id,
+        role : role
      }, config.JWT_SECRET, {expiresIn : "7d"});
 
       const hashedRefreshToken = await bcrypt.hash(refreshToken, 10); 
@@ -39,10 +40,11 @@ const createSession = async (userId, req) => {
     };
 }
 
-function generateAccessToken(userId, sessionId){
+function generateAccessToken(userId, sessionId, role){
     return jwt.sign({
         id : userId,
-        sessionId : sessionId
+        sessionId : sessionId,
+        role : role
     }, config.JWT_SECRET, {expiresIn : "15m"});
 }
 
@@ -249,11 +251,12 @@ export async function loginUser(req, res) {
       });
     }
 
-    const sessionData = await createSession(user._id, req);
+    const sessionData = await createSession(user._id, user.role, req);
 
     const accessToken = generateAccessToken(
       user._id,
-      sessionData.sessionId
+      sessionData.sessionId,
+      user.role
     );
 
     res.cookie("refreshToken", sessionData.refreshToken, {
@@ -326,7 +329,7 @@ export async function refreshToken(req, res){
         })
       }
 
-    const accessToken = generateAccessToken(user._id, session._id);
+    const accessToken = generateAccessToken(user._id, session._id, user.role);
 
     res.status(200).json({
       success : true,
@@ -451,9 +454,9 @@ export async function googleLogin(req, res){
     });
   }
 
-  const sessionData = await createSession(user._id, req);
+  const sessionData = await createSession(user._id, user.role, req);
 
-  const accessToken = generateAccessToken(user._id, sessionData.sessionId);
+  const accessToken = generateAccessToken(user._id, sessionData.sessionId, user.role);
 
   res.cookie("refreshToken", sessionData.refreshToken, {
     httpOnly: true,
@@ -571,10 +574,10 @@ export async function verifyEmail(req, res) {
 
         // TOKENS
         const accessToken =
-            generateAccessToken(user._id);
+            generateAccessToken(user._id, null, user.role);
 
         const sessionData =
-            await createSession(user._id, req);
+            await createSession(user._id, user.role, req);
 
         const refreshToken =
             sessionData.refreshToken;

@@ -24,6 +24,20 @@ export async function getProfile(req, res){
     }
 }
 
+export async function getAllUsers(req, res){
+    try {
+        const users = await User.find().select("-password");
+        return res.status(200).json({
+            success: true,
+            data: users
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        });
+    }
+}
 
 
 // import User from "../models/user.models.js";

@@ -15,8 +15,15 @@ export const profileApi = createApi({
                 url : "/profile",
                 method : "GET"
             })
+        }),
+
+        getAllUsers : builder.query({
+            query : () => ({
+                url : "/admin/users",
+                method : "GET"
+            })
         })
     })
 });
 
-export const { useGetProfileQuery } = profileApi;
+export const { useGetProfileQuery, useGetAllUsersQuery } = profileApi;
