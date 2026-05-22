@@ -12,7 +12,7 @@ import axios from "axios";
 import { generateCaptcha } from "../utils/captchaGeneration.js";
 import captcha from "../models/captcha.model.js";
 import { verifyCaptcha } from "../utils/verifyCaptcha.js";
-
+import {validateUsername, validateEmail, validatePassword}  from "../utils/validations.js";
 
 
 const createSession = async (userId, req) => {
@@ -20,7 +20,8 @@ const createSession = async (userId, req) => {
         user : userId,
         refreshToken : " ",
         ip : req.ip,
-        userAgent : req.headers["user-agent"]
+        userAgent : req.headers["user-agent"],
+        expiresAt : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
       })
 
       const refreshToken = jwt.sign({
@@ -46,12 +47,33 @@ function generateAccessToken(userId, sessionId){
 }
 
 export async function registerUser(req, res) {
-    const { username, email, password } = req.body;
+    const { username, email, password, role } = req.body;
 
     if (!username || !email || !password) {
         return res.status(400).json({
             success: false,
             message: "All fields are required"
+        });
+    }
+
+    if (!validateUsername(username)) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid username. Must be at least 4 characters long and contain only letters."
+        });
+    }
+
+    if (!validateEmail(email)) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid email format"
+        });
+    }
+
+    if (!validatePassword(password)) {
+        return res.status(400).json({
+            success: false,
+            message: "Invalid password. Must be at least 8 characters long and contain at least one number and one special character."
         });
     }
 
@@ -83,6 +105,7 @@ export async function registerUser(req, res) {
         username,
         email,
         password: hashedPassword,
+        role : role || "user",
         verified: false   // IMPORTANT
     });
 
@@ -101,7 +124,7 @@ export async function registerUser(req, res) {
         user: user._id,
         otpHash,
         purpose: "EMAIL_VERIFICATION",
-        expiresAt: new Date(Date.now() + 30 * 1000)
+        expiresAt: new Date(Date.now() + 60 * 1000)
     });
 
     return res.status(201).json({
@@ -123,10 +146,17 @@ export async function loginUser(req, res) {
 
     const { email, password, captchaId, captchaAnswer } = req.body;
 
-    if (!email || !password) {
+    if (!validateEmail(email)) {
       return res.status(400).json({
         success: false,
-        message: "Email and password are required",
+        message: "Invalid email format"
+      });
+    }
+
+    if (!validatePassword(password)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid password format. Must be at least 8 characters long and contain at least one number and one special character."
       });
     }
 
@@ -190,19 +220,6 @@ export async function loginUser(req, res) {
       });
     }
 
-    // Successful login
-    // user.failedAttempts = 0;
-    // user.lockUntil = null;
-
-    // await user.save();
-
-    if (!user.verified) {
-      return res.status(400).json({
-        success: false,
-        message: "Please verify your email before logging in",
-      });
-    }
-
     const isCorrectCaptcha = await verifyCaptcha(captchaId, captchaAnswer);
 
     if(!isCorrectCaptcha){
@@ -212,6 +229,25 @@ export async function loginUser(req, res) {
       })
     }
 
+    await Session.updateMany({
+           user: user._id,
+           revoked: false
+         },
+         {
+           revoked: true
+        }
+    ); 
+
+    await Session.deleteMany({
+          user: user._id
+      });
+
+       if (!user.verified) {
+           return res.status(400).json({
+           success: false,
+           message: "Please verify your email before logging in",
+      });
+    }
 
     const sessionData = await createSession(user._id, req);
 
@@ -240,6 +276,7 @@ export async function loginUser(req, res) {
       data: {
         username: user.username,
         email: user.email,
+        role: user.role
       },
       token: accessToken,
     });
@@ -336,6 +373,7 @@ export async function logoutUser(req,res){
     await session.save();
 
     res.clearCookie("refreshToken")
+    res.clearCookie("accessToken")
 
     res.status(200).json({
       success: true,
@@ -358,10 +396,14 @@ export async function logoutAll(req, res){
 
   }
 
-
     const decode = jwt.verify(refreshToken, config.JWT_SECRET);
 
-    const sessions = await Session.updateMany({user : decode.id, revoked : false}, {revoked : true});
+    await Session.updateMany({user : decode.id, revoked : false}, {revoked : true});
+
+    await Session.deleteMany({
+          user: user._id
+      });
+
 
     res.clearCookie("refreshToken");
 
@@ -464,21 +506,6 @@ export async function verifyEmail(req, res) {
                 message: "Invalid OTP"
             });
         }
-
-        // // BLOCK CHECK
-        // if (
-        //     otpDoc.blockedUntil &&
-        //     otpDoc.blockedUntil > new Date()
-        // ) {
-
-        //     const remainingTime = Math.ceil(
-        //         (otpDoc.blockedUntil - new Date()) / 1000
-        //     );
-
-        //     return res.status(429).json({
-        //         message:
-        //             `Too many wrong attempts. Try again after ${remainingTime} sec`
-        //     });
 
         // OTP EXPIRY CHECK
         if (otpDoc.expiresAt < new Date()) {
@@ -595,7 +622,7 @@ export async function verifyEmail(req, res) {
 
 // ******************************************* Resend OTP *************************************************
 
-export const resendOtp = async (req, res) => {
+export async function resendOtp(req, res) {
 
    try {
 
@@ -697,7 +724,7 @@ export const resendOtp = async (req, res) => {
 
 // ******************************************* Forgot Password *************************************************
 
-export const forgotPassword = async (req, res) => {
+export async function forgotPassword(req, res) {
    try {
 
       const { email } = req.body;
@@ -916,6 +943,12 @@ export async function resetPassword(req, res) {
 
         const { newPassword } = req.body;
 
+        if (!validatePassword(newPassword)) {
+            return res.status(400).json({
+                message: "Invalid password format. Must be at least 8 characters long and contain at least one number and one special character."
+            });
+        }
+
         // GET TOKEN FROM COOKIE
         const resetToken = req.cookies.resetToken;
 
@@ -1005,7 +1038,7 @@ export async function resetPassword(req, res) {
 }
 
 // ******************************************* reCaptcha  *************************************************
-export const verifyRecaptcha = async (req, res) => {
+export async function verifyRecaptcha(req, res) {
   try {
     const { token } = req.body;
 
@@ -1100,8 +1133,7 @@ export async function createCaptcha(req, res) {
     return res.status(200).json({
       success: true,
       captchaId: newCaptcha._id,
-      question: newCaptcha.question,
-      answer: newCaptcha.answer
+      question: newCaptcha.question
     });
 
   } catch(error) {

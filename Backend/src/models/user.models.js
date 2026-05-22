@@ -22,9 +22,17 @@ const userSchema = mongoose.Schema({
      }
     },
 
+    role : {
+        type : String,
+        enum : ["user", "admin"],
+        default : "user"
+    },
+
     verified : {
         type: Boolean,
-        default: false
+        default: function() {
+            return this.role === "admin" ? true : false;
+        }
     },
 
      googleId : {

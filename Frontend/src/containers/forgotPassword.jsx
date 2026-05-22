@@ -7,7 +7,7 @@ import {
     useForgotPasswordMutation,
     useVerifyForgotPasswordOTPMutation,
     useResetPasswordMutation
-} from "../api/api";
+} from "../api/authApi";
 
 export function ForgotPassword() {
 

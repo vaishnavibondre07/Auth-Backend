@@ -7,14 +7,14 @@ export async function authMiddleware(req,res,next){
 
         console.log("SECRET:", config.JWT_SECRET);
 
-        const authHeader = req.headers.authorization;
+        const token = req.cookies.accessToken;
 
         // console.log(authHeader);
 
         console.log("HEADERS:", req.headers);
-        console.log("AUTH HEADER:", req.headers.authorization);
+        // console.log("AUTH HEADER:", req.headers.authorization);
         
-        if(!authHeader || !authHeader.startsWith("Bearer ")){
+        if(!token){
 
             return res.status(401).json({
                 success: false,
@@ -23,7 +23,7 @@ export async function authMiddleware(req,res,next){
 
         }
 
-        const token = authHeader.split(" ")[1];
+        // const token = authHeader.split(" ")[1];
 
         const decoded = jwt.verify(token, config.JWT_SECRET);
 
@@ -35,6 +35,10 @@ export async function authMiddleware(req,res,next){
         console.log(session);
 
         if(!session || session.revoked){
+
+            res.clearCookie("accessToken")
+            res.clearCookie("refreshToken")
+
             return res.status(401).json({
                 success: false,
                 message: "Invalid session"

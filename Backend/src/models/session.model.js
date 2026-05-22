@@ -23,14 +23,19 @@ const sessionSchema = new mongoose.Schema({
         required : [true, "User agent is required"]
     },
 
-   revoked : {
-    type : Boolean,
-    default : false
-   }
-  },
-  {
+    revoked : {
+        type : Boolean,
+        default : false
+    },
+
+    expiresAt : {
+        type : Date,
+        expires : 0
+    }
+   },
+   {
       timestamps : true
-  }
+   }
  )
 
 const Sessions = mongoose.model("Sessions", sessionSchema);

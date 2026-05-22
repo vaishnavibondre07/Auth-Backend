@@ -1,7 +1,7 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react'
 
-export const api = createApi({
-    reducerPath: 'api',
+export const authApi = createApi({
+    reducerPath: 'authApi',
 
     baseQuery : fetchBaseQuery({
         baseUrl : "http://localhost:3000/api/auth",
@@ -26,11 +26,21 @@ export const api = createApi({
             })
         }),
 
+        googleLogin : builder.mutation({
+            query : (token) => ({
+                url : "/google-login",
+                method : "POST",
+                body : {token},
+
+                credentials : 'include'
+            })
+        }),
+
         refreshToken : builder.mutation({
-            query : (token)=> ({
+            query : ()=> ({
                 url : '/refresh-token',
                 method : "POST",
-                body : token
+                credentials : 'include',
             })
         }),
 
@@ -99,4 +109,4 @@ export const api = createApi({
     })
 });
 
-export const {useRegisterUserMutation, useLoginUserMutation, useRefreshTokenMutation, useVerifyEmailMutation, useResendOTPMutation, useForgotPasswordMutation, useVerifyForgotPasswordOTPMutation, useResetPasswordMutation, useCreateCaptchaMutation, useLogoutUserMutation, useLogoutFromAllDevicesMutation} = api;
+export const {useRegisterUserMutation, useLoginUserMutation, useRefreshTokenMutation, useVerifyEmailMutation, useResendOTPMutation, useForgotPasswordMutation, useVerifyForgotPasswordOTPMutation, useResetPasswordMutation, useCreateCaptchaMutation, useLogoutUserMutation, useLogoutFromAllDevicesMutation, useGoogleLoginMutation} = authApi;

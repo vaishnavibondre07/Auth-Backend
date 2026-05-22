@@ -1,215 +1,510 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useCreateCaptchaMutation, useRegisterUserMutation } from "../api/api";
+import { GoogleLogin } from "@react-oauth/google";
+import { useGoogleLoginMutation }from "../api/authApi";
+import { useCreateCaptchaMutation, useRegisterUserMutation } from "../api/authApi";
 import MessageBox from "../components/MessageBox";
+import { validateUsername,  validateEmail,  validatePassword} from "../utils/validations";
 
 export const Register = () => {
+
     const navigate = useNavigate();
 
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+
     const [captchaQuestion, setCaptchaQuestion] = useState("");
     const [captchaInput, setCaptchaInput] = useState("");
     const [captchaId, setCaptchaId] = useState("");
 
-    const [message, setMessage] = useState({ type: "", text: "" });
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-    const [registerUser, { isLoading }] = useRegisterUserMutation();
+    const [message, setMessage] = useState({
+        type: "",
+        text: "",
+    });
+
+    const [registerUser, {  isLoading }] = useRegisterUserMutation();
+
     const [createCaptcha] = useCreateCaptchaMutation();
 
-    useEffect(() => {
-        const fetchCaptcha = async () => {
-            try {
-                const data = await createCaptcha().unwrap();
-                setCaptchaQuestion(data.question);
-                setCaptchaId(data.captchaId);
-            } catch (err) {
-                setMessage({ type: "error", text: err.message });
-            }
-        };
+    const [googleLogin] = useGoogleLoginMutation();
 
+    // FETCH CAPTCHA
+
+    const fetchCaptcha = async () => {
+        try {
+            const data =  await createCaptcha().unwrap();
+            setCaptchaQuestion(data.question);
+            setCaptchaId(data.captchaId);
+            // clear old input
+            setCaptchaInput("");
+        } catch (err) {
+            setMessage({  type: "error", text: err.message
+            });
+        }
+    };
+
+    useEffect(() => {
         fetchCaptcha();
     }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        if (password !== confirmPassword) {
-            setMessage({ type: "error", text: "Passwords do not match" });
+    
+        if ( !username || !email || !password ||  !confirmPassword || !captchaInput ) {
+            setMessage({  type: "error", text: "All fields are required" });
             return;
         }
-
+        if ( !validateUsername(username) ) {
+              setMessage({ type: "error", text: "Username must be at least 3 characters", });
+             return;
+        }
+        if ( !validateEmail(email)) {
+            setMessage({ type: "error",  text:  "Enter a valid email address" });
+            return;
+        }
+        if ( !validatePassword(password) ) {
+             setMessage({ type: "error", text: "Password must contain 8 characters, one number and one special character",  });
+            return;
+        }
+        if ( password !== confirmPassword ) {
+            setMessage({ type: "error",  text: "Passwords do not match", });
+            return;
+        }
         try {
-            await registerUser({
-                username,
-                email,
-                password,
-                captchaId,
-                captchaAnswer: captchaInput,
-            }).unwrap();
-
-            setMessage({
-                type: "success",
-                text: "Registration successful! Redirecting...",
-            });
-
+            await registerUser({  username, email, password, captchaId, captchaAnswer: captchaInput }).unwrap();
+            setMessage({ type: "success", text: "Registration successful! Redirecting...", });
             setTimeout(() => {
-                navigate("/verify-email", { state: { email } });
+                navigate( "/verify-email", { state: { email }, });
             }, 1200);
 
         } catch (err) {
-            setMessage({
-                type: "error",
-                text: err?.data?.message || "Registration failed",
-            });
+            setMessage({  type: "error", text: err?.data?.message});
+            fetchCaptcha();
         }
     };
 
     const handleGoogleSignup = () => {
 
-
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-[#eef2ff]">
 
-            <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 space-y-5">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4 py-10">
+
+            <div className="w-full max-w-lg bg-white rounded-3xl shadow-2xl p-8 md:p-10">
 
                 {/* HEADER */}
-                <div className="text-center space-y-1">
-                    <h1 className="text-2xl font-bold text-gray-800">
-                        Create your account
+                <div className="text-center mb-8">
+                    <h1 className="text-4xl font-bold text-gray-800">
+                        Create Account
                     </h1>
-                    <p className="text-sm text-gray-500">
-                        Start your journey with professional precision.
+                    <p className="text-gray-500 mt-3 text-base">
+                        Join securely and start your journey today.
                     </p>
                 </div>
 
                 {message.text && (
-                    <MessageBox type={message.type} text={message.text} />
+                    <div className="mb-5">
+                        <MessageBox
+                            type={message.type}
+                            text={message.text}
+                        />
+                    </div>
                 )}
-
-                <form onSubmit={handleSubmit} className="space-y-4">
-
-                    {/* USERNAME */}
+                <form
+                    onSubmit={handleSubmit}
+                    className="space-y-5"
+                >
                     <div>
-                        <label className="text-xs font-semibold text-gray-500 uppercase">
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
                             Username
                         </label>
+
                         <input
                             type="text"
-                            placeholder="e.g. reliant_user"
+                            placeholder="Enter username"
                             value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            onChange={(e) => setUsername(  e.target.value )}
+                            className="w-full px-4 py-3 text-lg border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
 
-                    {/* EMAIL */}
                     <div>
-                        <label className="text-xs font-semibold text-gray-500 uppercase">
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
                             Email Address
                         </label>
                         <input
                             type="email"
-                            placeholder="name@company.com"
+                            placeholder="name@example.com"
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            onChange={(e) => setEmail( e.target.value )}
+                            className="w-full px-4 py-3 text-lg border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
 
-                    {/* PASSWORD ROW */}
-                    <div className="grid grid-cols-2 gap-3">
-
-                        <div>
-                            <label className="text-xs font-semibold text-gray-500 uppercase">
-                                Password
-                            </label>
-                            <input
-                                type="password"
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                            Password
+                        </label>
+                        <div className="relative">
+                            <input   
+                                type={ showPassword  ? "text" : "password"  }
+                                placeholder="Enter password"
                                 value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                onChange={(e) =>  setPassword(  e.target.value ) }
+                                className="w-full px-4 py-3 text-lg border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
-                        </div>
-
-                        <div>
-                            <label className="text-xs font-semibold text-gray-500 uppercase">
-                                Confirm Password
-                            </label>
-                            <input
-                                type="password"
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword) }
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-blue-600 font-semibold"
+                            >
+                                {showPassword ? "Hide"  : "Show"}
+                            </button>
                         </div>
                     </div>
 
-                    {/* CAPTCHA */}
                     <div>
-                        <label className="text-xs font-semibold text-gray-500 uppercase">
-                            Security Check
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                            Confirm Password
+                        </label>
+                        <div className="relative">
+                            <input
+                                type={ showConfirmPassword ? "text"  : "password"  }
+                                placeholder="Confirm password"
+                                value={confirmPassword}
+                                onChange={(e) =>  setConfirmPassword( e.target.value  )
+                                }
+                                className="w-full px-4 py-3 text-lg border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                            <button
+                                type="button"
+                                onClick={() =>  setShowConfirmPassword( !showConfirmPassword)
+                                }
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-blue-600 font-semibold"
+                            >
+                                {showConfirmPassword ? "Hide": "Show"}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-3">
+                                Security Verification
                         </label>
 
-                        <div className="flex items-center justify-between mt-2 bg-blue-50 border rounded-md px-3 py-2">
-                            <span className="text-blue-700 font-bold text-lg">
-                                {captchaQuestion || "Loading..."}
-                            </span>
+                        <div className="border border-blue-100 bg-blue-50 rounded-2xl p-4">
 
-                            <input
-                                type="text"
-                                placeholder="Result"
-                                value={captchaInput}
-                                onChange={(e) => setCaptchaInput(e.target.value)}
-                                className="w-24 px-2 py-1 border rounded-md text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            />
-                        </div>
-                    </div>
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
 
-                    {/* BUTTON */}
+                                <div className="flex items-center justify-between sm:min-w-[180px] bg-white border rounded-xl px-4 py-3">
+
+                                    <span className="text-xl font-bold text-blue-700 tracking-wide">
+                                         {captchaQuestion }
+                                    </span>
+
+                                    <button
+                                        type="button"
+                                        onClick={fetchCaptcha}
+                                        className="ml-4 text-sm font-semibold text-blue-600 hover:text-blue-800"
+                                    >
+                                         Refresh
+                                    </button>
+
+                                </div>
+
+                                <input
+                                    type="text"
+                                    placeholder="Enter answer"
+                                    value={captchaInput}
+                                    onChange={(e) =>  setCaptchaInput( e.target.value ) }
+                                    className="flex-1 w-full px-4 py-3 text-lg bg-white border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                             </div>
+                       </div>
+                   </div>
+
+                    {/* SUBMIT */}
+
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="w-full bg-blue-700 text-white py-2.5 rounded-md font-semibold hover:bg-blue-800 disabled:bg-gray-400"
+                        className="w-full bg-blue-700 text-white py-3.5 rounded-xl text-lg font-semibold hover:bg-blue-800 transition disabled:bg-gray-400"
                     >
-                        {isLoading ? "Creating Account..." : "Create Account"}
+                        {isLoading
+                            ? "Creating Account..."
+                            : "Create Account"}
                     </button>
 
-                    {/* OR */}
-                    <div className="flex items-center gap-2">
-                        <div className="h-px bg-gray-300 flex-1"></div>
-                        <span className="text-xs text-gray-400">OR</span>
-                        <div className="h-px bg-gray-300 flex-1"></div>
+                    {/* DIVIDER */}
+
+                    <div className="flex items-center gap-3">
+
+                        <div className="flex-1 h-px bg-gray-300"></div>
+
+                        <span className="text-sm text-gray-400">
+                            OR
+                        </span>
+
+                        <div className="flex-1 h-px bg-gray-300"></div>
+
                     </div>
 
                     {/* GOOGLE */}
-                    <button
-                        type="button"
-                        onClick={handleGoogleSignup}
-                        className="w-full border py-2 rounded-md flex items-center justify-center gap-2 hover:bg-gray-50"
-                    >
-                        <img
-                            src="https://www.svgrepo.com/show/475656/google-color.svg"
-                            className="w-5 h-5"
+
+                   <div className="flex justify-center">
+                           <GoogleLogin  
+                                onSuccess={async (credentialResponse) => {
+                                       try {
+                                        const response =await googleLogin( credentialResponse.credential).unwrap();
+
+                                       setMessage({type: "success", text:response.message  });
+
+                                        navigate("/profile");
+                                   } catch (err) {
+                                          setMessage({ type: "error", text: err?.data?.message   });
+                                    }
+                              }}
+
+                              onError={() => { setMessage({type: "error", text: err.message,});}}
                         />
-                        Sign up with Google
-                    </button>
+                   </div>
 
                 </form>
 
-                {/* LOGIN */}
-                <p className="text-center text-sm text-gray-600">
+                <p className="text-center text-base text-gray-600 mt-8">
                     Already have an account?{" "}
-                    <Link to="/login" className="text-blue-600 font-semibold">
+                    <Link
+                        to="/login"
+                        className="text-blue-600 font-semibold hover:underline"
+                    >
                         Log in
                     </Link>
                 </p>
-
             </div>
         </div>
     );
-};
+ };
+
+
+// import { useState, useEffect } from "react";
+// import { useNavigate, Link } from "react-router-dom";
+// import { useCreateCaptchaMutation, useRegisterUserMutation } from "../api/authApi";
+// import MessageBox from "../components/MessageBox";
+// import { validateUsername,validateEmail, validatePassword } from "../utils/validations";
+
+// export const Register = () => {
+//     const navigate = useNavigate();
+
+//     const [username, setUsername] = useState("");
+//     const [email, setEmail] = useState("");
+//     const [password, setPassword] = useState("");
+//     const [confirmPassword, setConfirmPassword] = useState("");
+//     const [captchaQuestion, setCaptchaQuestion] = useState("");
+//     const [captchaInput, setCaptchaInput] = useState("");
+//     const [captchaId, setCaptchaId] = useState("");
+
+//     const [message, setMessage] = useState({ type: "", text: "" });
+
+//     const [registerUser, { isLoading }] = useRegisterUserMutation();
+//     const [createCaptcha] = useCreateCaptchaMutation();
+
+//     useEffect(() => {
+//         const fetchCaptcha = async () => {
+//             try {
+//                 const data = await createCaptcha().unwrap();
+//                 setCaptchaQuestion(data.question);
+//                 setCaptchaId(data.captchaId);
+//             } catch (err) {
+//                 setMessage({ type: "error", text: err.message });
+//             }
+//         };
+
+//         fetchCaptcha();
+//     }, []);
+
+//     const handleSubmit = async (e) => {
+//         e.preventDefault();
+
+//         if (password !== confirmPassword) {
+//             setMessage({ type: "error", text: "Passwords do not match" });
+//             return;
+//         }
+
+//         try {
+//             await registerUser({
+//                 username,
+//                 email,
+//                 password,
+//                 captchaId,
+//                 captchaAnswer: captchaInput,
+//             }).unwrap();
+
+//             setMessage({
+//                 type: "success",
+//                 text: "Registration successful! Redirecting...",
+//             });
+
+//             setTimeout(() => {
+//                 navigate("/verify-email", { state: { email } });
+//             }, 1200);
+
+//         } catch (err) {
+//             setMessage({
+//                 type: "error",
+//                 text: err?.data?.message || "Registration failed",
+//             });
+//         }
+//     };
+
+//     const handleGoogleSignup = () => {
+
+
+//     };
+
+//     return (
+//         <div className="min-h-screen flex items-center justify-center bg-[#eef2ff]">
+
+//             <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 space-y-5">
+
+//                 {/* HEADER */}
+//                 <div className="text-center space-y-1">
+//                     <h1 className="text-2xl font-bold text-gray-800">
+//                         Create your account
+//                     </h1>
+//                     <p className="text-sm text-gray-500">
+//                         Start your journey with professional precision.
+//                     </p>
+//                 </div>
+
+//                 {message.text && (
+//                     <MessageBox type={message.type} text={message.text} />
+//                 )}
+
+//                 <form onSubmit={handleSubmit} className="space-y-4">
+
+//                     {/* USERNAME */}
+//                     <div>
+//                         <label className="text-xs font-semibold text-gray-500 uppercase">
+//                             Username
+//                         </label>
+//                         <input
+//                             type="text"
+//                             placeholder="e.g. reliant_user"
+//                             value={username}
+//                             onChange={(e) => setUsername(e.target.value)}
+//                             className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+//                         />
+//                     </div>
+
+//                     {/* EMAIL */}
+//                     <div>
+//                         <label className="text-xs font-semibold text-gray-500 uppercase">
+//                             Email Address
+//                         </label>
+//                         <input
+//                             type="email"
+//                             placeholder="name@company.com"
+//                             value={email}
+//                             onChange={(e) => setEmail(e.target.value)}
+//                             className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+//                         />
+//                     </div>
+
+//                     {/* PASSWORD ROW */}
+//                     <div className="grid grid-cols-2 gap-3">
+
+//                         <div>
+//                             <label className="text-xs font-semibold text-gray-500 uppercase">
+//                                 Password
+//                             </label>
+//                             <input
+//                                 type="password"
+//                                 value={password}
+//                                 onChange={(e) => setPassword(e.target.value)}
+//                                 className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+//                             />
+//                         </div>
+
+//                         <div>
+//                             <label className="text-xs font-semibold text-gray-500 uppercase">
+//                                 Confirm Password
+//                             </label>
+//                             <input
+//                                 type="password"
+//                                 value={confirmPassword}
+//                                 onChange={(e) => setConfirmPassword(e.target.value)}
+//                                 className="w-full mt-1 px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+//                             />
+//                         </div>
+//                     </div>
+
+//                     {/* CAPTCHA */}
+//                     <div>
+//                         <label className="text-xs font-semibold text-gray-500 uppercase">
+//                             Security Check
+//                         </label>
+
+//                         <div className="flex items-center justify-between mt-2 bg-blue-50 border rounded-md px-3 py-2">
+//                             <span className="text-blue-700 font-bold text-lg">
+//                                 {captchaQuestion || "Loading..."}
+//                             </span>
+
+//                             <input
+//                                 type="text"
+//                                 placeholder="Result"
+//                                 value={captchaInput}
+//                                 onChange={(e) => setCaptchaInput(e.target.value)}
+//                                 className="w-24 px-2 py-1 border rounded-md text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
+//                             />
+//                         </div>
+//                     </div>
+
+//                     {/* BUTTON */}
+//                     <button
+//                         type="submit"
+//                         disabled={isLoading}
+//                         className="w-full bg-blue-700 text-white py-2.5 rounded-md font-semibold hover:bg-blue-800 disabled:bg-gray-400"
+//                     >
+//                         {isLoading ? "Creating Account..." : "Create Account"}
+//                     </button>
+
+//                     {/* OR */}
+//                     <div className="flex items-center gap-2">
+//                         <div className="h-px bg-gray-300 flex-1"></div>
+//                         <span className="text-xs text-gray-400">OR</span>
+//                         <div className="h-px bg-gray-300 flex-1"></div>
+//                     </div>
+
+//                     {/* GOOGLE */}
+//                     <button
+//                         type="button"
+//                         onClick={handleGoogleSignup}
+//                         className="w-full border py-2 rounded-md flex items-center justify-center gap-2 hover:bg-gray-50"
+//                     >
+//                         <img
+//                             src="https://www.svgrepo.com/show/475656/google-color.svg"
+//                             className="w-5 h-5"
+//                         />
+//                         Sign up with Google
+//                     </button>
+
+//                 </form>
+
+//                 {/* LOGIN */}
+//                 <p className="text-center text-sm text-gray-600">
+//                     Already have an account?{" "}
+//                     <Link to="/login" className="text-blue-600 font-semibold">
+//                         Log in
+//                     </Link>
+//                 </p>
+
+//             </div>
+//         </div>
+//     );
+// };

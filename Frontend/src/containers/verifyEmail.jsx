@@ -7,7 +7,7 @@ import  MessageBox  from "../components/MessageBox";
 import {
     useVerifyEmailMutation,
     useResendOTPMutation
-} from "../api/api";
+} from "../api/authApi";
 
 export const VerifyEmail = () => {
 
