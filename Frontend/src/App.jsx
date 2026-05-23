@@ -1,20 +1,46 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Register } from "./containers/register";
-import {VerifyEmail} from "./containers/verifyEmail";
-import { Login } from "./containers/login";
+import { lazy, Suspense } from "react";
+
+import { VerifyEmail } from "./containers/verifyEmail";
 import { ForgotPassword } from "./containers/forgotPassword";
-import { Profile } from "./pages/Profile";
+import { AdminRoute } from "./routes/AdminRoutes";
+
+// LAZY LOADING
+const Register = lazy(() => import("./pages/Register"));
+const Profile = lazy(() => import("./pages/Profile"));
+const Admin = lazy(() => import("./pages/Admin"));
+const Login = lazy(() => import("./pages/Login"));
 
 function App() {
     return (
         <BrowserRouter>
-            <Routes>
-                <Route path="/" element={<Register />} />
-                <Route path="/verify-email" element={<VerifyEmail />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/profile" element={<Profile />} />
-            </Routes>
+
+            <Suspense
+                fallback={
+                    <div className="min-h-screen flex items-center justify-center">
+                        <h1 className="text-2xl font-semibold text-blue-600">
+                            Loading...
+                        </h1>
+                    </div>
+                }
+            >
+
+                <Routes>
+
+                    <Route path="/" element={<Register />} />
+
+                    <Route path="/login" element={<Login />} />
+
+                    <Route path="/verify-email" element={<VerifyEmail />} />
+
+                    <Route path="/forgot-password" element={<ForgotPassword />}/>
+
+                    <Route path="/profile" element={<Profile />} />
+
+                    <Route path="/admin" element={ <AdminRoute> <Admin /> </AdminRoute> } />
+
+                </Routes>
+            </Suspense>
         </BrowserRouter>
     );
 }
