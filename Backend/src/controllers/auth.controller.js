@@ -45,7 +45,7 @@ function generateAccessToken(userId, sessionId, role){
         id : userId,
         sessionId : sessionId,
         role : role
-    }, config.JWT_SECRET, {expiresIn : "2m"});
+    }, config.JWT_SECRET, {expiresIn : "10m"});
 }
 
 export async function registerUser(req, res) {
@@ -261,15 +261,15 @@ export async function loginUser(req, res) {
     res.cookie("refreshToken", sessionData.refreshToken, {
       httpOnly: true,
       secure: false,
-      sameSite: "lax",
+      sameSite: "none",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: false,
-      sameSite: "lax",
-      maxAge: 2 * 60 * 1000,
+      sameSite: "none",
+      maxAge: 10 * 60 * 1000,
     });
 
     return res.status(200).json({
@@ -284,8 +284,6 @@ export async function loginUser(req, res) {
     });
 
   } catch (error) {
-
-    console.log(error);
 
     return res.status(500).json({
       success: false,
@@ -332,8 +330,8 @@ export async function refreshToken(req, res){
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: false,
-      sameSite: "lax",
-      maxAge: 2 * 60 * 1000,
+      sameSite: "none",
+      maxAge: 10 * 60 * 1000,
     });
 
     res.status(200).json({
@@ -465,15 +463,15 @@ export async function googleLogin(req, res){
   res.cookie("refreshToken", sessionData.refreshToken, {
     httpOnly: true,
     secure: false,
-    sameSite: "lax",
+    sameSite: "none",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 
   res.cookie("accessToken", accessToken, {
     httpOnly: true,
     secure: false,
-    sameSite: "lax",
-    maxAge: 5 * 60 * 1000,
+    sameSite: "none",
+    maxAge: 10 * 60 * 1000,
   });
 
   return res.status(200).json({
@@ -497,16 +495,12 @@ export async function googleLogin(req, res){
 }
 
 // ******************************************* Verify Email *************************************************
-
 export async function verifyEmail(req, res) {
-
-    try {
+ try {
 
         const { email, otp } = req.body;
 
         const otpDoc = await otpModel.findOne({ email });
-
-        console.log("otpDoc.user:", otpDoc.user);
 
         if (!otpDoc) {
             return res.status(400).json({
@@ -593,15 +587,15 @@ export async function verifyEmail(req, res) {
         res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
             secure: false,
-            sameSite: "lax",
+            sameSite: "none",
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
 
         res.cookie("accessToken", accessToken, {
             httpOnly: true,
             secure: false,
-            sameSite: "lax",
-            maxAge: 5 * 60 * 1000,
+            sameSite: "none",
+            maxAge: 10 * 60 * 1000,
         });
 
         return res.status(200).json({
@@ -619,8 +613,6 @@ export async function verifyEmail(req, res) {
 
     }
    } catch (error) {
-
-        console.log(error);
 
         return res.status(500).json({
             message: "Internal Server Error"
@@ -923,7 +915,7 @@ export async function verifyForgotPasswordOTP(req, res) {
         res.cookie("resetToken", resetToken, {
             httpOnly: true,
             secure: false,
-            sameSite: "lax",
+            sameSite: "none",
             maxAge: 10 * 60 * 1000
         });
 
@@ -933,8 +925,6 @@ export async function verifyForgotPasswordOTP(req, res) {
         });
 
     } catch (error) {
-
-        console.log(error);
 
         return res.status(500).json({
             message: "Internal Server Error"
@@ -1037,8 +1027,6 @@ export async function resetPassword(req, res) {
 
     } catch (error) {
 
-        console.log(error);
-
         return res.status(500).json({
             message: "Internal Server Error"
         });
@@ -1131,8 +1119,6 @@ export async function createCaptcha(req, res) {
 
   try {
     const {question, answer} = generateCaptcha();
-    console.log(question , answer);
-    
 
     const newCaptcha = await captcha.create({
       question : question,
@@ -1161,6 +1147,7 @@ export async function deleteAccount(req, res){
 
   try {
        const userId = req.user.id;
+       console.log("Deleting account for user ID:", userId);
 
        await User.findByIdAndDelete(userId);
         await Session.deleteMany({user : userId});
@@ -1173,7 +1160,6 @@ export async function deleteAccount(req, res){
           message : "Account deleted successfully"
         })
   } catch (error) {
-         console.log(error);
          return res.status(500).json({
              success : false,
              message : "Internal Server Error"

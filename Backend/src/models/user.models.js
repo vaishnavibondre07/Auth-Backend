@@ -50,6 +50,9 @@ const userSchema = mongoose.Schema({
         default: null
     }
 
+},
+{
+    timestamps : true
 })
 
 const User = mongoose.model("User", userSchema)

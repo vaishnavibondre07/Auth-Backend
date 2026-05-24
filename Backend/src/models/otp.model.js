@@ -30,7 +30,7 @@ const otpSchema = new mongoose.Schema({
 
     expiresAt : {
         type: Date,
-        required: [ true, "Expiration time is required" ]
+        expires : 600
     },
 
     blockedUntil : Date,

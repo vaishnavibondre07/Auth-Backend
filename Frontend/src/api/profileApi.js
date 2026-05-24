@@ -26,7 +26,9 @@ export const profileApi = createApi({
                 url : "/admin/users",
                 method : "GET"
             })
-        })
+        }),
+
+        providesTags: ['profile']
     })
 });
 

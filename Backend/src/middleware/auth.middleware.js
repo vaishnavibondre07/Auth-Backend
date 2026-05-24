@@ -5,8 +5,6 @@ import Session from "../models/session.model.js";
 export async function authMiddleware(req,res,next){
     try{
 
-        console.log("SECRET:", config.JWT_SECRET);
-
         const token = req.cookies.accessToken;
 
         if(!token){
@@ -18,17 +16,10 @@ export async function authMiddleware(req,res,next){
 
         }
 
-        // const token = authHeader.split(" ")[1];
-
         const decoded = jwt.verify(token, config.JWT_SECRET);
 
-        console.log(decoded);
-
         const session = await Session.findById(decoded.sessionId);
-
-        console.log(decoded.sessionId);
-        console.log(session);
-
+        
         if(!session || session.revoked){
 
             res.clearCookie("accessToken")

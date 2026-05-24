@@ -33,7 +33,6 @@ if (!process.env.SITE_KEY) {
 if (!process.env.SECRET_KEY) {
     throw new Error("SECRET_KEY is not defined in .env file");
 }
-// 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
 
 const config = {
     MONGO_URI: process.env.MONGO_URI,

@@ -1,9 +1,9 @@
 export const generateCaptcha = () => {
 
-    const number1 = Math.floor(Math.random() * 10);
+    const number1 = Math.floor(Math.random() * 10) + 1;
     const number2 = Math.floor(Math.random() * 10);
 
-    const operators = ['+', '-', '*'];
+    const operators = ['+', '-'];
 
     const operator = operators[Math.floor(Math.random() * operators.length)];
 
@@ -18,11 +18,6 @@ export const generateCaptcha = () => {
         case '-':
             answer = number1 - number2;
             question = `${number1} - ${number2}`;
-            break;
-
-        case '*':
-            answer = number1 * number2;
-            question = `${number1} * ${number2}`;
             break;
     }
 

@@ -118,8 +118,19 @@ export const authApi = createApi({
                    credentials: 'include'
             }),
            invalidatesTags: ["Profile"],
+      }),
+
+      deleteUserByAdmin: builder.mutation({
+          query: (id) => ({
+             url: `/auth/delete-account/${id}`,
+             method: "DELETE",
+             credentials: "include"
+      }), 
+
+         invalidatesTags: ["Profile"]
       })
+
    })
 });
 
-export const {useRegisterUserMutation, useLoginUserMutation, useRefreshTokenMutation, useVerifyEmailMutation, useResendOTPMutation, useForgotPasswordMutation, useVerifyForgotPasswordOTPMutation, useResetPasswordMutation, useCreateCaptchaMutation, useLogoutUserMutation, useLogoutFromAllDevicesMutation, useGoogleLoginMutation, useDeleteAccountMutation} = authApi;
+export const {useRegisterUserMutation, useLoginUserMutation, useRefreshTokenMutation, useVerifyEmailMutation, useResendOTPMutation, useForgotPasswordMutation, useVerifyForgotPasswordOTPMutation, useResetPasswordMutation, useCreateCaptchaMutation, useLogoutUserMutation, useLogoutFromAllDevicesMutation, useGoogleLoginMutation, useDeleteAccountMutation, useDeleteUserByAdminMutation} = authApi;
