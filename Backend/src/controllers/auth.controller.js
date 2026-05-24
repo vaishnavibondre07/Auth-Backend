@@ -260,14 +260,14 @@ export async function loginUser(req, res) {
 
     res.cookie("refreshToken", sessionData.refreshToken, {
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: "none",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: "none",
       maxAge: 10 * 60 * 1000,
     });
@@ -329,7 +329,7 @@ export async function refreshToken(req, res){
     
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
-      secure: false,
+      secure: true,
       sameSite: "none",
       maxAge: 10 * 60 * 1000,
     });
@@ -462,14 +462,14 @@ export async function googleLogin(req, res){
 
   res.cookie("refreshToken", sessionData.refreshToken, {
     httpOnly: true,
-    secure: false,
+    secure: true,
     sameSite: "none",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 
   res.cookie("accessToken", accessToken, {
     httpOnly: true,
-    secure: false,
+    secure: true,
     sameSite: "none",
     maxAge: 10 * 60 * 1000,
   });
@@ -586,14 +586,14 @@ export async function verifyEmail(req, res) {
         // COOKIES
         res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
-            secure: false,
+            secure: true,
             sameSite: "none",
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
 
         res.cookie("accessToken", accessToken, {
             httpOnly: true,
-            secure: false,
+            secure: true,
             sameSite: "none",
             maxAge: 10 * 60 * 1000,
         });
@@ -914,7 +914,7 @@ export async function verifyForgotPasswordOTP(req, res) {
         // STORE TOKEN IN COOKIE (OPTIONAL)
         res.cookie("resetToken", resetToken, {
             httpOnly: true,
-            secure: false,
+            secure: true,
             sameSite: "none",
             maxAge: 10 * 60 * 1000
         });
