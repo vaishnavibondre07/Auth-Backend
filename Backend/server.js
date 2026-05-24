@@ -4,8 +4,8 @@ import config from "./src/config/config.js";
 
 connectDB();
 
-const PORT= config.PORT
+const PORT= config.PORT 
 
-app.listen(3000, ()=>{
+app.listen(PORT, ()=>{
     console.log("Server is running on port " + PORT)
 })
