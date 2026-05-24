@@ -1,28 +1,31 @@
-import nodemailer from 'nodemailer';
-import { googleClient } from '../config/googleClient.js';
-import config from '../config/config.js';
+import nodemailer from "nodemailer";
+import config from "../config/config.js";
 
+// Create transporter
 export const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    service: "gmail",
     auth: {
-        type: 'OAuth2',
+        type: "OAuth2",
         user: config.GOOGLE_USER,
         clientId: config.GOOGLE_CLIENT_ID,
         clientSecret: config.GOOGLE_CLIENT_SECRET,
-        refreshToken: config.GOOGLE_REFRESH_TOKEN
-    }
-});
-
-transporter.verify((error, success) => {
-    if (error) {
-        console.error('Error setting up email transporter:', error);
-    } else {
-        console.log('Email transporter is ready to send messages');
-    }
+        refreshToken: config.GOOGLE_REFRESH_TOKEN,
+    },
 });
 
 
-export async function sendEmail(to, subject, text, html) {
+//  SAFE VERIFY (NON-BLOCKING)
+transporter.verify()
+    .then(() => {
+        console.log("Email transporter is ready");
+    })
+    .catch((error) => {
+        console.log("Email transporter failed:", error.message);
+    });
+
+
+//  SAFE EMAIL FUNCTION
+export async function sendEmail(to, subject, text = "", html = "") {
     try {
         const info = await transporter.sendMail({
             from: config.GOOGLE_USER,
@@ -31,11 +34,20 @@ export async function sendEmail(to, subject, text, html) {
             text,
             html,
         });
-        console.log('Email sent successfully:', info.messageId);
+
+        console.log("Email sent:", info.messageId);
+
+        return {
+            success: true,
+            messageId: info.messageId,
+        };
+
     } catch (error) {
-        console.error('Error sending email:', error);
-        throw error;
+        console.log("Email send failed:", error.message);
+
+        return {
+            success: false,
+            error: error.message,
+        };
     }
 }
-
-
