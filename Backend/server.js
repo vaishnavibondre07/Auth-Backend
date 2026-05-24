@@ -4,7 +4,7 @@ import config from "./src/config/config.js";
 
 connectDB();
 
-const PORT= config.PORT || 300
+const PORT= config.PORT
 
 app.listen(3000, ()=>{
     console.log("Server is running on port " + PORT)
