@@ -45,7 +45,7 @@ function generateAccessToken(userId, sessionId, role){
         id : userId,
         sessionId : sessionId,
         role : role
-    }, config.JWT_SECRET, {expiresIn : "15m"});
+    }, config.JWT_SECRET, {expiresIn : "2m"});
 }
 
 export async function registerUser(req, res) {
@@ -108,7 +108,7 @@ export async function registerUser(req, res) {
         email,
         password: hashedPassword,
         role : role || "user",
-        verified: false   // IMPORTANT
+        verified: false  
     });
 
     await sendEmail(
@@ -118,7 +118,6 @@ export async function registerUser(req, res) {
         generateOTPHtml(otp)
     );
 
-    // Generate OTP
     const otpHash = await bcrypt.hash(otp.toString(), 10);
     
     await otpModel.create({
@@ -147,7 +146,6 @@ export async function loginUser(req, res) {
   try {
 
     const { email, password, captchaId, captchaAnswer} = req.body;
-    console.log(req.body);
 
     if (!validateEmail(email)) {
       return res.status(400).json({
@@ -164,9 +162,7 @@ export async function loginUser(req, res) {
     }
 
     const user = await User.findOne({ email });
-    console.log(user);
-    
-
+  
     if (!user) {
       return res.status(400).json({
         success: false,
@@ -273,7 +269,7 @@ export async function loginUser(req, res) {
       httpOnly: true,
       secure: false,
       sameSite: "lax",
-      maxAge: 15 * 60 * 1000,
+      maxAge: 2 * 60 * 1000,
     });
 
     return res.status(200).json({
@@ -303,7 +299,6 @@ export async function refreshToken(req, res){
   try {
 
     const refreshToken = req.cookies.refreshToken;
-    // const refreshToken = req.body
 
     if(!refreshToken){
       return res.status(401).json({
@@ -314,12 +309,12 @@ export async function refreshToken(req, res){
 
     const decode = jwt.verify(refreshToken, config.JWT_SECRET);
 
-    const session = await Session.findById(decode.session.id);
+    const session = await Session.findById(decode.sessionId);
 
     if(!session || session.revoked){
       return res.status(401).json({
         success : false,
-        message : "Invalid session"
+        message : "Session Expried. Please login again"
       })
     }
 
@@ -333,6 +328,13 @@ export async function refreshToken(req, res){
       }
 
     const accessToken = generateAccessToken(user._id, session._id, user.role);
+    
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: 2 * 60 * 1000,
+    });
 
     res.status(200).json({
       success : true,
@@ -342,6 +344,7 @@ export async function refreshToken(req, res){
 
 
   } catch (error) {
+    console.log(error);
      return res.status(401).json({
          success : false,
          message : "Invalid refresh token"
@@ -354,8 +357,6 @@ export async function refreshToken(req, res){
 export async function logoutUser(req,res){
 
     const refreshToken = req.cookies.refreshToken;
-
-    console.log(refreshToken);
     
     if(!refreshToken){
       return res.status(401).json({
@@ -472,7 +473,7 @@ export async function googleLogin(req, res){
     httpOnly: true,
     secure: false,
     sameSite: "lax",
-    maxAge: 15 * 60 * 1000,
+    maxAge: 5 * 60 * 1000,
   });
 
   return res.status(200).json({
@@ -516,7 +517,10 @@ export async function verifyEmail(req, res) {
         // OTP EXPIRY CHECK
         if (otpDoc.expiresAt < new Date()) {
 
-            // await otpModel.deleteMany({ email });
+              await otpModel.deleteMany({
+                email,
+                purpose: "EMAIL_VERIFICATION"
+            });
 
             return res.status(400).json({
                 message: "OTP expired"
@@ -597,7 +601,7 @@ export async function verifyEmail(req, res) {
             httpOnly: true,
             secure: false,
             sameSite: "lax",
-            maxAge: 15 * 60 * 1000,
+            maxAge: 5 * 60 * 1000,
         });
 
         return res.status(200).json({
@@ -1150,4 +1154,30 @@ export async function createCaptcha(req, res) {
     })
   }
 }
-  
+
+// ******************************************* Delete Account *************************************************
+
+export async function deleteAccount(req, res){
+
+  try {
+       const userId = req.user.id;
+
+       await User.findByIdAndDelete(userId);
+        await Session.deleteMany({user : userId});
+
+       res.clearCookie("refreshToken");
+       res.clearCookie("accessToken");
+
+        return res.status(200).json({
+          success : true,
+          message : "Account deleted successfully"
+        })
+  } catch (error) {
+         console.log(error);
+         return res.status(500).json({
+             success : false,
+             message : "Internal Server Error"
+     })
+  }
+
+}

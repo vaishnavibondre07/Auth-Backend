@@ -1,21 +1,21 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react'
 import { config } from '../config';
+import { baseQueryWithReauth } from './baseQuery';
 
 const url = config.BACKEND_URL;
 
 export const authApi = createApi({
     reducerPath: 'authApi',
 
-    baseQuery : fetchBaseQuery({
-        baseUrl : `${url}/api/auth`,
-        credentials : 'include'
-    }),
+    baseQuery : baseQueryWithReauth,
+
+    tagTypes : ['Profile'],
 
     endpoints : (builder) => ({
 
         registerUser : builder.mutation({
             query : (user) => ({
-                url : "/register",
+                url : "/auth/register",
                 method : "POST",
                 body : user
             })
@@ -23,7 +23,7 @@ export const authApi = createApi({
 
         loginUser : builder.mutation({
             query : (user) => ({
-                url : "/login",
+                url : "/auth/login",
                 method : "POST",
                 body : user
             })
@@ -31,7 +31,7 @@ export const authApi = createApi({
 
         googleLogin : builder.mutation({
             query : (token) => ({
-                url : "/google-login",
+                url : "/auth/google-login",
                 method : "POST",
                 body : {token},
 
@@ -41,7 +41,7 @@ export const authApi = createApi({
 
         refreshToken : builder.mutation({
             query : ()=> ({
-                url : '/refresh-token',
+                url : '/auth/refresh-token',
                 method : "POST",
                 credentials : 'include',
             })
@@ -49,7 +49,7 @@ export const authApi = createApi({
 
         verifyEmail : builder.mutation({
             query : (otp) => ({
-                url  : '/verify-email',
+                url  : '/auth/verify-email',
                 method : "POST",
                 body : otp
             })
@@ -57,7 +57,7 @@ export const authApi = createApi({
 
         resendOTP : builder.mutation({
             query : (email) => ({
-                url : '/resend-otp',
+                url : '/auth/resend-otp',
                 method : "POST",
                 body : email
             })    
@@ -65,7 +65,7 @@ export const authApi = createApi({
 
         forgotPassword : builder.mutation({
             query : (email) => ({
-                url : '/forgot-password',
+                url : '/auth/forgot-password',
                 method : "POST",
                 body : email
             })
@@ -73,7 +73,7 @@ export const authApi = createApi({
 
         verifyForgotPasswordOTP : builder.mutation({
             query : (data) => ({
-                url : '/verify-forgot-password-otp',
+                url : '/auth/verify-forgot-password-otp',
                 method : "POST",
                 body : data
             })
@@ -81,7 +81,7 @@ export const authApi = createApi({
 
         resetPassword : builder.mutation({
             query : (data) => ({
-            url : '/reset-password',
+            url : '/auth/reset-password',
             method : "POST",
             body : data
            })
@@ -89,27 +89,37 @@ export const authApi = createApi({
 
         createCaptcha : builder.mutation({
             query : () => ({
-                url : '/create-captcha',
+                url : '/auth/create-captcha',
                 method : "GET"
             })
         }),
 
         logoutUser : builder.mutation({
             query : (token) => ({
-                url : '/logout',
+                url : '/auth/logout',
+                method : "POST",
+                body : token
+            }),
+            invalidatesTags : ['Profile']
+        }),
+
+        logoutFromAllDevices : builder.mutation({
+            query : (token) => ({
+                url : '/auth/logout-all-devices',
                 method : "POST",
                 body : token
             })
         }),
 
-        logoutFromAllDevices : builder.mutation({
-            query : (token) => ({
-                url : '/logout-all-devices',
-                method : "POST",
-                body : token
-            })
-        })
-    })
+        deleteAccount: builder.mutation({
+            query: () => ({
+                   url: "/auth/delete-account",
+                   method: "DELETE",
+                   credentials: 'include'
+            }),
+           invalidatesTags: ["Profile"],
+      })
+   })
 });
 
-export const {useRegisterUserMutation, useLoginUserMutation, useRefreshTokenMutation, useVerifyEmailMutation, useResendOTPMutation, useForgotPasswordMutation, useVerifyForgotPasswordOTPMutation, useResetPasswordMutation, useCreateCaptchaMutation, useLogoutUserMutation, useLogoutFromAllDevicesMutation, useGoogleLoginMutation} = authApi;
+export const {useRegisterUserMutation, useLoginUserMutation, useRefreshTokenMutation, useVerifyEmailMutation, useResendOTPMutation, useForgotPasswordMutation, useVerifyForgotPasswordOTPMutation, useResetPasswordMutation, useCreateCaptchaMutation, useLogoutUserMutation, useLogoutFromAllDevicesMutation, useGoogleLoginMutation, useDeleteAccountMutation} = authApi;

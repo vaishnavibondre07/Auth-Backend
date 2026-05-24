@@ -1,23 +1,21 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { profileApi } from "../api/profileApi";
 import { useGetProfileQuery } from "../api/profileApi";
-import {
-   useRefreshTokenMutation,
-   useLogoutUserMutation,
-} from "../api/authApi";
-
+import { useRefreshTokenMutation, useLogoutUserMutation, useDeleteAccountMutation} from "../api/authApi";
+import {store} from "../store/store";
 import MessageBox from "../components/MessageBox";
+
 
 const Profile = () => {
 
-   const navigate = useNavigate();
+   console.log(store.getState().profileApi.queries);
 
-   const {
-      data,
-      isLoading,
-      error,
-      refetch,
-   } = useGetProfileQuery();
+   const navigate = useNavigate();
+   const dispatch = useDispatch();
+
+   const { data, isLoading, error, refetch} = useGetProfileQuery();
 
    const [message, setMessage] = useState(null);
 
@@ -28,35 +26,11 @@ const Profile = () => {
       { isLoading: isLoggingOut }
    ] = useLogoutUserMutation();
 
-   useEffect(() => {
+   const [
+   deleteAccount,
+   { isLoading: isDeleting }
+] = useDeleteAccountMutation();
 
-      const refreshAccessToken =
-         async () => {
-
-         if (error?.status === 401) {
-
-            try {
-
-               await refreshToken().unwrap();
-
-               await refetch();
-
-            } catch (err) {
-
-               navigate("/login");
-
-            }
-         }
-      };
-
-      refreshAccessToken();
-
-   }, [
-      error,
-      refreshToken,
-      refetch,
-      navigate,
-   ]);
 
    const handleLogout = async () => {
 
@@ -69,7 +43,10 @@ const Profile = () => {
             text: res.message
          })
 
-         navigate("/login");
+         dispatch( profileApi.util.resetApiState());
+         console.log(store.getState().profileApi.queries);
+
+         // navigate("/login");
 
       } catch (error) {
 
@@ -79,6 +56,25 @@ const Profile = () => {
          });
       }
    };
+
+   const handleDeleteAccount = async () => {
+      if (window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
+         try {
+            const res = await deleteAccount().unwrap();
+            setMessage({
+               type: "success",
+               text: res.message,
+            });
+            navigate("/");
+         }
+            catch (error) {
+               setMessage({
+                  type: "error",
+                  text: error.message,
+               });
+            }
+      }
+   }
 
    const handleDashboardNavigation = () => {
 
@@ -91,6 +87,8 @@ const Profile = () => {
          navigate("/profile");
       }
    };
+
+
 
    if (isLoading) {
 
@@ -233,6 +231,16 @@ const Profile = () => {
                            ? "Logging out..."
                            : "Logout"}
                      </button>
+
+                     <button
+   onClick={handleDeleteAccount}
+   disabled={isDeleting}
+   className="bg-red-600 text-white px-5 py-3 rounded-xl font-semibold hover:bg-red-700 transition disabled:opacity-50"
+>
+   {isDeleting
+      ? "Deleting..."
+      : "Delete Account"}
+</button>
 
                   </div>
 
