@@ -11,6 +11,8 @@ const baseQuery = fetchBaseQuery({
 export const baseQueryWithReauth =
    async (args, api, extraOptions) => {
 
+      console.log("BACKEND URL:", url);
+
       let result =
          await baseQuery(
             args,
