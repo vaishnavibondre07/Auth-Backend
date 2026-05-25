@@ -10,7 +10,7 @@ import MessageBox from "../components/MessageBox";
 
 const userProfile = () => {
 
-   console.log(store.getState().profileApi.queries);
+   // console.log(store.getState().profileApi.queries);
 
    const navigate = useNavigate();
    const dispatch = useDispatch();
