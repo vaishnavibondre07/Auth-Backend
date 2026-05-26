@@ -12,7 +12,7 @@ export async function sendEmail(to, subject, text = "", html = "") {
         await transactionalApi.sendTransacEmail({
             sender: {
                 email: "vaishnavibondre1234@gmail.com",
-                name: "Your App"
+                name: "Auth App"
             },
             to: [{ email: to }],
             subject,
