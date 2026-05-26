@@ -100,12 +100,13 @@ export const LoginUser = () => {
   return (
     <main className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-8">
 
-        <MessageBox
-              type={type}
-              text={text}
-              onClose={() => setMessage("")}
-                  
-        />
+        {message.text && (
+           <MessageBox
+            type={message.type}
+            text={message.text}
+            onClose={() => setMessage({ type: "", text: "" })}
+         />
+       )}
 
       <section className="w-full max-w-md bg-white shadow-xl rounded-2xl p-5 sm:p-8 text-gray-800">
 
