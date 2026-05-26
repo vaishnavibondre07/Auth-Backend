@@ -2,8 +2,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGetAllUsersQuery } from "../api/profileApi";
 import MessageBox from "../components/MessageBox";
+import { useSessionChecker } from "../hook/useSessionChecker";
+
 
 export const AdminDashboard = () => {
+
+    useSessionChecker();
 
     const navigate = useNavigate();
     const { data, isLoading, error } = useGetAllUsersQuery();

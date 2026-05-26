@@ -128,9 +128,12 @@ export const authApi = createApi({
       }), 
 
          invalidatesTags: ["Profile"]
-      })
+      }),
 
+      checkSession: builder.query({
+             query: () => "/auth/check-session", 
+      }),
    })
 });
 
-export const {useRegisterUserMutation, useLoginUserMutation, useRefreshTokenMutation, useVerifyEmailMutation, useResendOTPMutation, useForgotPasswordMutation, useVerifyForgotPasswordOTPMutation, useResetPasswordMutation, useCreateCaptchaMutation, useLogoutUserMutation, useLogoutFromAllDevicesMutation, useGoogleLoginMutation, useDeleteAccountMutation, useDeleteUserByAdminMutation} = authApi;
+export const {useRegisterUserMutation, useLoginUserMutation, useRefreshTokenMutation, useVerifyEmailMutation, useResendOTPMutation, useForgotPasswordMutation, useVerifyForgotPasswordOTPMutation, useResetPasswordMutation, useCreateCaptchaMutation, useLogoutUserMutation, useLogoutFromAllDevicesMutation, useGoogleLoginMutation, useDeleteAccountMutation, useDeleteUserByAdminMutation, useCheckSessionQuery} = authApi;

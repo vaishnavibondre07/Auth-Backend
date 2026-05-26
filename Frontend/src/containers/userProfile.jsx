@@ -8,10 +8,13 @@ import {store} from "../store/store";
 import MessageBox from "../components/MessageBox";
 import { logout } from "../features/authSlice";
 import { useSelector } from "react-redux";
+import { useSessionChecker } from "../hook/useSessionChecker";
 
 
 
 const UserProfile = () => {
+
+   useSessionChecker();
 
    // console.log(store.getState().profileApi.queries);
 

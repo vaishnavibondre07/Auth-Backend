@@ -456,7 +456,8 @@ export async function googleLogin(req, res){
       username : name,
       email,
       googleId,
-      password: null
+      password: null,
+      verified: true
     });
   }
 
@@ -1180,3 +1181,20 @@ export async function deleteAccount(req, res){
   }
 
 }
+
+//  ******************************************* Check Session *************************************************
+
+export const checkSession = async (req, res) => {
+  try {
+    return res.status(200).json({
+      success: true,
+      message: "Session is valid",
+    });
+
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};

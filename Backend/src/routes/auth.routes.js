@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { registerUser, loginUser, refreshToken, logoutUser, logoutAll, googleLogin, verifyEmail, resendOtp, forgotPassword, verifyForgotPasswordOTP, resetPassword, verifyRecaptcha, createCaptcha, deleteAccount } from "../controllers/auth.controller.js";
+import { registerUser, loginUser, refreshToken, logoutUser, logoutAll, googleLogin, verifyEmail, resendOtp, forgotPassword, verifyForgotPasswordOTP, resetPassword, verifyRecaptcha, createCaptcha, deleteAccount, checkSession } from "../controllers/auth.controller.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
 import { authorizeRoles  } from "../middleware/role.middleware.js"
 const authRouter = Router();
@@ -18,6 +18,7 @@ authRouter.post("/reset-password", resetPassword);
 authRouter.post("/verify-recaptcha", verifyRecaptcha)
 authRouter.get("/create-captcha", createCaptcha);
 authRouter.delete("/delete-account", authMiddleware, deleteAccount);
+authRouter.get("/check-session", authMiddleware, checkSession );
 
 export default authRouter;
 
