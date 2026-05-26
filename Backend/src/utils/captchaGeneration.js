@@ -1,6 +1,6 @@
 export const generateCaptcha = () => {
 
-    const number1 = Math.floor(Math.random() * 10) + 1;
+    const number1 = Math.floor(Math.random() * 10) + 10;
     const number2 = Math.floor(Math.random() * 10);
 
     const operators = ['+', '-'];

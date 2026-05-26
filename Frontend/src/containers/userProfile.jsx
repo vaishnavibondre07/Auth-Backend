@@ -40,13 +40,13 @@ const UserProfile = () => {
 
          dispatch(clearUser());
 
-         setMessage({
+         dispatch( profileApi.util.resetApiState());
+         console.log(store.getState().profileApi.queries);
+
+          setMessage({
             type: "success",
             text: res.message
          })
-
-         dispatch( profileApi.util.resetApiState());
-         console.log(store.getState().profileApi.queries);
 
          navigate("/login");
 

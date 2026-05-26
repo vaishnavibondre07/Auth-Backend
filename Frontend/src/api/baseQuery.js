@@ -20,8 +20,12 @@ export const baseQueryWithReauth =
             extraOptions
          );
 
+      const isAuthRoute = args.url?.includes("/auth/login") ||
+                          args.url?.includes("/auth/logout") ||
+                          args.url?.includes("/auth/refresh-token")
+
       // if access token expired
-      if (result?.error?.status === 401) {
+      if (result?.error?.status === 401 && !isAuthRoute) {
 
          console.log(
             "Access token expired. Refreshing..."
