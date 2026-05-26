@@ -24,8 +24,7 @@ export function ForgotPassword() {
 
     const [loading, setLoading] = useState(false);
 
-    const [message, setMessage] = useState("");
-    const [messageType, setMessageType] = useState("success");
+    const [message, setMessage] = useState({type: "", text: ""});
 
     const [timer, setTimer] = useState(60);
     const [canResend, setCanResend] = useState(false);
@@ -142,8 +141,8 @@ export function ForgotPassword() {
         <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-8">
 
             <MessageBox
-                type={messageType}
-                text={message}
+                type={type}
+                text={text}
                 onClose={() => setMessage("")}
             />
 

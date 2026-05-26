@@ -21,7 +21,7 @@ const UserProfile = () => {
 
    const { data, isLoading, error, refetch} = useGetProfileQuery(undefined, {skip : !user});
 
-   const [message, setMessage] = useState(null);
+   const [message, setMessage] = useState({type: "", text:""});
 
    const [refreshToken] =
       useRefreshTokenMutation();
@@ -104,8 +104,8 @@ const UserProfile = () => {
          <div className="min-h-screen flex items-center justify-center bg-gray-100">
 
             <MessageBox
-                  type={messageType}
-                  text={message}
+                  type={type}
+                  text={text}
                   onClose={() => setMessage("")}
             />
 
