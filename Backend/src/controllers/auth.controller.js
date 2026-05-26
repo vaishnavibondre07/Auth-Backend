@@ -110,7 +110,8 @@ export async function registerUser(req, res) {
         role : role || "user",
         verified: false  
     });
-
+    
+      console.log("OTP HTML:", generateOTPHtml(otp)); // 👈 add before sendEmail call
     await sendEmail(
         email,
         "Verify your email",

@@ -24,8 +24,9 @@ export async function sendEmail(to, subject, text = "", html = "") {
         return { success: true };
 
     } catch (error) {
-        console.log("Email send failed:", error.message);
-        return { success: false, error: error.message };
+    console.log("Email send failed:", error.message);
+    console.log("FULL ERROR:", JSON.stringify(error?.response?.body, null, 2));
+    return { success: false, error: error.message };
     }
 }
 
