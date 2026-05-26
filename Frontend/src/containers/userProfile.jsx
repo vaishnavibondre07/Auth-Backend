@@ -6,6 +6,7 @@ import { useGetProfileQuery } from "../api/profileApi";
 import { useRefreshTokenMutation, useLogoutUserMutation, useDeleteAccountMutation} from "../api/authApi";
 import {store} from "../store/store";
 import MessageBox from "../components/MessageBox";
+import { logout } from "../features/authSlice";
 
 
 const UserProfile = () => {
@@ -15,7 +16,7 @@ const UserProfile = () => {
    const navigate = useNavigate();
    const dispatch = useDispatch();
 
-   const { data, isLoading, error, refetch} = useGetProfileQuery();
+   const { data, isLoading, error, refetch} = useGetProfileQuery(undefined, {skip : !user});
 
    const [message, setMessage] = useState(null);
 
@@ -38,7 +39,7 @@ const UserProfile = () => {
 
          const res = await logoutUser().unwrap();
 
-         dispatch(clearUser());
+         dispatch(logout());
 
          dispatch( profileApi.util.resetApiState());
          console.log(store.getState().profileApi.queries);
