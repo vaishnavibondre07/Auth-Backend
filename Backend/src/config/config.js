@@ -36,6 +36,10 @@ if (!process.env.SECRET_KEY) {
     throw new Error("SECRET_KEY is not defined in .env file");
 }
 
+if(!process.env.RESEND_API_KEY){
+    throw new Error("RESEND_API_KEY is not defined");
+}
+
 const config = {
     PORT:process.env.PORT,
     MONGO_URI: process.env.MONGO_URI,
@@ -46,6 +50,7 @@ const config = {
     GOOGLE_USER: process.env.GOOGLE_USER,
     SITE_KEY: process.env.SITE_KEY,
     SECRET_KEY: process.env.SECRET_KEY,
+    RESEND_API_KEY: process.env.RESEND_API_KEY
 }
 
 export default config;
