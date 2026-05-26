@@ -86,6 +86,8 @@ const RegisterUser = () => {
                 captchaAnswer: captcha.answer,
             }).unwrap();
 
+            console.log("REGISTER SUCCESS:", res);
+
             setMessage({ type: "success", text: "Registered successfully" });
 
             setTimeout(() => {
@@ -103,14 +105,6 @@ const RegisterUser = () => {
 
     return (
         <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-100 via-blue-50 to-cyan-100 px-4 py-8">
-
-             {message.text && (
-                <MessageBox
-                   type={message.type}
-                   text={message.text}
-                   onClose={() => setMessage({ type: "", text: "" })}
-               />
-             )}
 
             <section className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-5 sm:p-8 space-y-5">
 
