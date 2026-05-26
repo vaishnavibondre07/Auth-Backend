@@ -1,15 +1,18 @@
-import * as Brevo from "@getbrevo/brevo";
+import SibApiV3Sdk from "sib-api-v3-sdk";
 import config from "../config/config.js";
 
-const client = new Brevo.TransactionalEmailsApi();
-client.authentications["api-key"].apiKey = config.BREVO_API_KEY;
+const client = SibApiV3Sdk.ApiClient.instance;
+const apiKey = client.authentications["api-key"];
+apiKey.apiKey = config.BREVO_API_KEY;
+
+const transactionalApi = new SibApiV3Sdk.TransactionalEmailsApi();
 
 export async function sendEmail(to, subject, text = "", html = "") {
     try {
-        await client.sendTransacEmail({
-            sender: { 
+        await transactionalApi.sendTransacEmail({
+            sender: {
                 email: "vaishnavibondre1234@gmail.com",
-                name: "Auth App"
+                name: "Your App"
             },
             to: [{ email: to }],
             subject,
@@ -25,7 +28,6 @@ export async function sendEmail(to, subject, text = "", html = "") {
         return { success: false, error: error.message };
     }
 }
-
 
 // import { Resend } from "resend";
 // import config from "../config/config.js";
