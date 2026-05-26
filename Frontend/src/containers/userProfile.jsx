@@ -38,6 +38,8 @@ const UserProfile = () => {
 
          const res = await logoutUser().unwrap();
 
+         dispatch(clearUser());
+
          setMessage({
             type: "success",
             text: res.message
@@ -46,7 +48,7 @@ const UserProfile = () => {
          dispatch( profileApi.util.resetApiState());
          console.log(store.getState().profileApi.queries);
 
-         // navigate("/login");
+         navigate("/login");
 
       } catch (error) {
 
