@@ -149,7 +149,7 @@ const userProfile = () => {
 
    return (
 
-      <div className="min-h-screen bg-gray-100 py-10 px-4">
+      <div className="min-h-screen bg-gray-100 py-6 sm:py-10 px-4">
 
          {message && (
             <MessageBox
@@ -159,17 +159,13 @@ const userProfile = () => {
             />
          )}
 
-         <div className="max-w-4xl mx-auto">
+         <div className="max-w-4xl mx-auto w-full">
 
-            {/* TOP CARD */}
+            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl sm:rounded-3xl p-5 sm:p-8 shadow-xl text-white">
 
-            <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-3xl p-8 shadow-xl text-white">
+               <div className="flex flex-col md:flex-row items-center md:items-start gap-5 sm:gap-6">
 
-               <div className="flex flex-col md:flex-row items-center gap-6">
-
-                  {/* AVATAR */}
-
-                  <div className="w-28 h-28 rounded-full bg-white text-blue-600 flex items-center justify-center text-4xl font-bold shadow-lg">
+                  <div className="w-20 h-20 sm:w-28 sm:h-28 rounded-full bg-white text-blue-600 flex items-center justify-center text-3xl sm:text-4xl font-bold shadow-lg shrink-0">
 
                      {data?.data?.username
                         ?.charAt(0)
@@ -179,13 +175,13 @@ const userProfile = () => {
 
                   {/* USER INFO */}
 
-                  <div className="flex-1">
+                  <div className="flex-1 text-center md:text-left w-full min-w-0">
 
-                     <h1 className="text-3xl font-bold">
+                     <h1 className="text-2xl sm:text-3xl font-bold break-words">
                         {data?.data?.username}
                      </h1>
 
-                     <p className="text-blue-100 mt-1">
+                     <p className="text-blue-100 mt-1 text-sm sm:text-base break-all">
                         {data?.data?.email}
                      </p>
 
@@ -207,27 +203,21 @@ const userProfile = () => {
 
                   {/* ACTION BUTTONS */}
 
-                  <div className="flex flex-col gap-3">
-
-                     {/* DASHBOARD BUTTON */}
+                  <div className="flex flex-col gap-2 sm:gap-3 w-full md:w-auto">
 
                      {data?.data?.role === "admin" && (
-
                         <button
                            onClick={handleDashboardNavigation}
-                           className="bg-white text-blue-600 px-5 py-3 rounded-xl font-semibold hover:bg-blue-50 transition"
+                           className="w-full md:w-auto bg-white text-blue-600 px-5 py-3 min-h-[44px] rounded-xl font-semibold hover:bg-blue-50 transition"
                         >
                            Dashboard
                         </button>
-
                      )}
-
-                     {/* LOGOUT BUTTON */}
 
                      <button
                         onClick={handleLogout}
                         disabled={isLoggingOut}
-                        className="bg-white text-red-600 px-5 py-3 rounded-xl font-semibold hover:bg-red-50 transition disabled:opacity-50"
+                        className="w-full md:w-auto bg-white text-red-600 px-5 py-3 min-h-[44px] rounded-xl font-semibold hover:bg-red-50 transition disabled:opacity-50"
                      >
                         {isLoggingOut
                            ? "Logging out..."
@@ -235,14 +225,14 @@ const userProfile = () => {
                      </button>
 
                      <button
-   onClick={handleDeleteAccount}
-   disabled={isDeleting}
-   className="bg-red-600 text-white px-5 py-3 rounded-xl font-semibold hover:bg-red-700 transition disabled:opacity-50"
->
-   {isDeleting
-      ? "Deleting..."
-      : "Delete Account"}
-</button>
+                        onClick={handleDeleteAccount}
+                        disabled={isDeleting}
+                        className="w-full md:w-auto bg-red-600 text-white px-5 py-3 min-h-[44px] rounded-xl font-semibold hover:bg-red-700 transition disabled:opacity-50"
+                     >
+                        {isDeleting
+                           ? "Deleting..."
+                           : "Delete Account"}
+                     </button>
 
                   </div>
 
@@ -252,11 +242,11 @@ const userProfile = () => {
 
             {/* INFO GRID */}
 
-            <div className="grid md:grid-cols-2 gap-6 mt-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-6 sm:mt-8">
 
                {/* ACCOUNT INFO */}
 
-               <div className="bg-white rounded-2xl shadow-lg p-6">
+               <div className="bg-white rounded-2xl shadow-lg p-5 sm:p-6">
 
                   <h2 className="text-xl font-bold text-gray-800 mb-5">
                      Account Information
@@ -306,7 +296,7 @@ const userProfile = () => {
 
                {/* PASSWORD RESET */}
 
-               <div className="bg-white rounded-2xl shadow-lg p-6">
+               <div className="bg-white rounded-2xl shadow-lg p-5 sm:p-6">
 
                   <h3 className="text-xl font-bold text-gray-800">
                      Password Recovery
@@ -318,7 +308,7 @@ const userProfile = () => {
 
                   <button
                      onClick={() => navigate("/forgot-password")}
-                     className="mt-5 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                     className="mt-5 w-full sm:w-auto bg-blue-600 text-white px-4 py-2.5 min-h-[44px] rounded-lg hover:bg-blue-700 transition"
                   >
                      Reset Password
                   </button>

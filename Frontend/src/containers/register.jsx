@@ -205,7 +205,8 @@ const RegisterUser = () => {
                     bg-white
                     rounded-2xl
                     shadow-xl
-                    p-6
+                    p-5
+                    sm:p-8
                 "
             >
 
@@ -215,7 +216,8 @@ const RegisterUser = () => {
 
                     <h1
                         className="
-                            text-3xl
+                            text-2xl
+                            sm:text-3xl
                             font-bold
                             text-blue-700
                         "
@@ -329,6 +331,7 @@ const RegisterUser = () => {
                             hover:bg-blue-600
                             text-white
                             py-2.5
+                            min-h-[44px]
                             rounded-lg
                             font-semibold
                             transition

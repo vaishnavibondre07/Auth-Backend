@@ -139,26 +139,24 @@ export function ForgotPassword() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-8">
 
-            {/* MESSAGE BOX */}
             <MessageBox
                 type={messageType}
-                message={message}
+                text={message}
                 onClose={() => setMessage("")}
             />
 
-            <div className="w-full max-w-md bg-white rounded-2xl shadow-lg border p-8">
+            <div className="w-full max-w-md bg-white rounded-2xl shadow-lg border p-5 sm:p-8">
 
-                {/* STEP INDICATOR */}
-                <div className="flex justify-between mb-6 text-sm">
+                <div className="flex justify-between gap-1 sm:gap-2 mb-6 text-xs sm:text-sm">
                     {steps.map((s, i) => (
-                        <div key={i} className="flex-1 text-center">
+                        <div key={i} className="flex-1 min-w-0 text-center">
                             <div className={`h-1 mb-2 rounded ${
                                 step > i + 1 ? "bg-green-500" :
                                 step === i + 1 ? "bg-blue-500" : "bg-gray-300"
                             }`} />
-                            <span className={step === i + 1 ? "font-semibold" : "text-gray-400"}>
+                            <span className={`truncate block ${step === i + 1 ? "font-semibold text-gray-800" : "text-gray-400"}`}>
                                 {s}
                             </span>
                         </div>
@@ -169,20 +167,21 @@ export function ForgotPassword() {
                 {step === 1 && (
                     <form onSubmit={handleSendOtp} className="space-y-4">
 
-                        <h1 className="text-xl font-semibold text-center">
+                        <h1 className="text-lg sm:text-xl font-semibold text-center">
                             Forgot Password
                         </h1>
 
                         <input
+                            type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             placeholder="Enter email"
-                            className="w-full p-3 border rounded-lg"
+                            className="w-full p-3 min-h-[44px] text-base sm:text-sm border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                         />
 
                         <button
                             disabled={loading}
-                            className="w-full bg-blue-600 text-white py-3 rounded-lg"
+                            className="w-full bg-blue-600 text-white py-3 min-h-[44px] rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
                         >
                             {loading ? "Sending..." : "Send OTP"}
                         </button>
@@ -199,13 +198,16 @@ export function ForgotPassword() {
                 {/* STEP 2 */}
                 {step === 2 && (
                     <OTPVerification
+                        embedded
                         title="Verify OTP"
-                        subtitle="Enter code sent to email"
-                        buttonText="Verify"
+                        subtitle="Enter the code sent to"
+                        email={email}
+                        buttonText={loading ? "Verifying..." : "Verify"}
                         onSubmit={handleVerifyOtp}
                         onResend={handleResendOtp}
                         canResend={canResend}
                         timer={timer}
+                        onBack={() => setStep(1)}
                     />
                 )}
 
@@ -213,7 +215,7 @@ export function ForgotPassword() {
                 {step === 3 && (
                     <form onSubmit={handleResetPassword} className="space-y-4">
 
-                        <h1 className="text-xl font-semibold text-center">
+                        <h1 className="text-lg sm:text-xl font-semibold text-center">
                             Reset Password
                         </h1>
 
@@ -222,12 +224,12 @@ export function ForgotPassword() {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             placeholder="New password"
-                            className="w-full p-3 border rounded-lg"
+                            className="w-full p-3 min-h-[44px] text-base sm:text-sm border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                         />
 
                         <button
                             disabled={loading}
-                            className="w-full bg-blue-600 text-white py-3 rounded-lg"
+                            className="w-full bg-blue-600 text-white py-3 min-h-[44px] rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
                         >
                             {loading ? "Resetting..." : "Reset Password"}
                         </button>

@@ -32,16 +32,20 @@ export const AdminDashboard = () => {
 
     if (isLoading) {
         return (
-            <div className="p-10 text-xl font-semibold">
-                Loading users...
+            <div className="min-h-screen flex items-center justify-center p-6">
+                <p className="text-lg sm:text-xl font-semibold text-gray-700">
+                    Loading users...
+                </p>
             </div>
         );
     }
 
     if (error) {
         return (
-            <div className="p-10 text-red-500 font-semibold">
-                Failed to load users
+            <div className="min-h-screen flex items-center justify-center p-6">
+                <p className="text-lg sm:text-xl text-red-500 font-semibold text-center">
+                    Failed to load users
+                </p>
             </div>
         );
     }
@@ -71,7 +75,7 @@ export const AdminDashboard = () => {
 
                         <button
                             onClick={() => navigate("/profile")}
-                            className="bg-blue-600 text-white px-5 py-2 rounded-xl hover:bg-blue-700 transition"
+                            className="w-full sm:w-auto bg-blue-600 text-white px-5 py-2.5 min-h-[44px] rounded-xl hover:bg-blue-700 transition"
                         >
                             My Profile
                         </button>
@@ -113,10 +117,60 @@ export const AdminDashboard = () => {
 
                 </div>
 
-                {/* TABLE */}
-                <div className="overflow-x-auto rounded-xl border">
+                {/* MOBILE CARDS */}
+                <div className="md:hidden space-y-4">
+                    {filteredUsers?.length > 0 ? (
+                        filteredUsers.map((user, index) => (
+                            <article
+                                key={user._id}
+                                className="border rounded-xl p-4 bg-gray-50/80 space-y-3"
+                            >
+                                <div className="flex items-start justify-between gap-2">
+                                    <div className="min-w-0">
+                                        <p className="text-xs text-gray-500">#{index + 1}</p>
+                                        <h3 className="font-semibold text-gray-900 truncate">
+                                            {user.username}
+                                        </h3>
+                                        <p className="text-sm text-gray-600 break-all">{user.email}</p>
+                                    </div>
+                                    <span
+                                        className={`shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold
+                                            ${user.role === "admin"
+                                                ? "bg-red-100 text-red-700"
+                                                : "bg-blue-100 text-blue-700"
+                                            }`}
+                                    >
+                                        {user.role}
+                                    </span>
+                                </div>
+                                <div className="flex flex-wrap gap-2 text-sm">
+                                    <span
+                                        className={
+                                            user.verified
+                                                ? "text-green-600 font-medium"
+                                                : "text-red-500 font-medium"
+                                        }
+                                    >
+                                        {user.verified ? "Verified" : "Not Verified"}
+                                    </span>
+                                    <span className="text-gray-400">·</span>
+                                    <span className="text-gray-600">
+                                        {user.createdAt
+                                            ? new Date(user.createdAt).toLocaleDateString()
+                                            : "N/A"}
+                                    </span>
+                                </div>
+                            </article>
+                        ))
+                    ) : (
+                        <p className="text-center py-10 text-gray-500">No users found</p>
+                    )}
+                </div>
 
-                    <table className="w-full min-w-[900px] border-collapse">
+                {/* DESKTOP TABLE */}
+                <div className="hidden md:block overflow-x-auto rounded-xl border">
+
+                    <table className="w-full border-collapse">
 
                         {/* HEADER */}
                         <thead>

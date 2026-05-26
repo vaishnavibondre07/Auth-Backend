@@ -102,13 +102,13 @@ const Register = () => {
     };
 
     return (
-        <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-100 via-blue-50 to-cyan-100 px-4">
+        <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-100 via-blue-50 to-cyan-100 px-4 py-8">
 
-            <section className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 space-y-5">
+            <section className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-5 sm:p-8 space-y-5">
 
                 {/* HEADER */}
                 <div className="text-center">
-                    <h1 className="text-3xl font-bold text-blue-700">
+                    <h1 className="text-2xl sm:text-3xl font-bold text-blue-700">
                         Create Account
                     </h1>
                     <p className="text-sm text-gray-500 mt-1">

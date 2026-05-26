@@ -105,27 +105,27 @@ export const VerifyEmail = () => {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-8">
 
-            {/* MESSAGE BOX */}
             <MessageBox
                 type={messageType}
-                message={message}
+                text={message}
                 onClose={() => setMessage("")}
             />
 
             <div className="w-full max-w-md">
-
                 <OTPVerification
+                    embedded
                     title="Verify Email"
-                    subtitle={`Enter OTP sent to ${email}`}
+                    subtitle="Enter the 6-digit code sent to"
+                    email={email}
                     buttonText={loading ? "Verifying..." : "Verify"}
                     onSubmit={handleVerifyOtp}
                     onResend={handleResendOtp}
                     canResend={canResend}
                     timer={timer}
+                    onBack={() => navigate("/login")}
                 />
-
             </div>
         </div>
     );

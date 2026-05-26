@@ -98,13 +98,13 @@ export const LoginUser = () => {
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+    <main className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-8">
 
-      <section className="w-full max-w-md bg-white shadow-xl rounded-2xl p-6 sm:p-8 text-gray-800">
+      <section className="w-full max-w-md bg-white shadow-xl rounded-2xl p-5 sm:p-8 text-gray-800">
 
         {/* HEADER */}
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-800">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
             Welcome Back
           </h1>
           <p className="text-sm text-gray-500 mt-1">
@@ -150,7 +150,7 @@ export const LoginUser = () => {
           />
 
           {/* PASSWORD + FORGOT PASSWORD */}
-          <div className="flex justify-between items-center mb-1">
+          <div className="flex flex-wrap justify-between items-center gap-1 mb-1">
             <label htmlFor="forgetPassword" className="text-sm text-gray-600">Password</label>
             <Link
               to="/forgot-password"

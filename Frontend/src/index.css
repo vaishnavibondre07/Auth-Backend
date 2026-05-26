@@ -1,1 +1,15 @@
 @import 'tailwindcss';
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply overflow-x-hidden antialiased;
+  }
+
+  #root {
+    @apply min-h-screen;
+  }
+}
