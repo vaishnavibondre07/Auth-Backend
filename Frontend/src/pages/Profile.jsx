@@ -1,8 +1,8 @@
-import userProfile from "../containers/userProfile"
+import UserProfile from "../containers/userProfile"
 
 const Profile = () => {
    return (
-      <userProfile/>
+      <UserProfile/>
    )
 }
 
