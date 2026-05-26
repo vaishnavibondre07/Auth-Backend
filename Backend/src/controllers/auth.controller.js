@@ -243,12 +243,15 @@ export async function loginUser(req, res) {
           user: user._id
       });
 
-       if (!user.verified) {
-           return res.status(400).json({
-           success: false,
-           message: "Please verify your email before logging in",
-      });
-    }
+      if (!user.verified) {
+        return res.status(403).json({
+             success: false,
+             code: "EMAIL_NOT_VERIFIED",
+             message: "Please verify your email before logging in",
+             email: user.email,
+             redirect: "/verify-email"
+       });
+     }
 
     const sessionData = await createSession(user._id, user.role, req);
 

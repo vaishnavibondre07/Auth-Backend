@@ -51,6 +51,12 @@ export const LoginUser = () => {
     fetchCaptcha();
   }, []);
 
+  const handleVerifyEmail = () => {
+            setTimeout(() => {
+                navigate("/verify-email", { state: { email } });
+            }, 1000);
+  }
+
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -89,10 +95,19 @@ export const LoginUser = () => {
 
       navigate(res.data.role === "admin" ? "/admin" : "/profile");
     } catch (err) {
-      setMessage({
-        type: "error",
-        text: err?.data?.message || "Invalid credentials",
-      });
+      const data = err?.data;
+
+      if (data?.code === "EMAIL_NOT_VERIFIED") {
+          navigate("/verify-email", {
+          state: { email: data.email }
+       });
+       return;
+      }
+
+  setMessage({
+    type: "error",
+    text: data?.message || "Login failed",
+  });
       fetchCaptcha();
     }
   };
@@ -134,18 +149,6 @@ export const LoginUser = () => {
         {/* FORM */}
         <form onSubmit={handleLogin} className="mt-6 space-y-4">
 
-          {/* ROLE
-          <div>
-            <label className="text-sm text-gray-600">Login As</label>
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="user">User</option>
-              <option value="admin">Admin</option>
-            </select>
-          </div> */}
 
           {/* EMAIL */}
           <AuthInput
@@ -189,6 +192,10 @@ export const LoginUser = () => {
             Login
           </AuthButton>
         </form>
+
+        <button onClick={handleVerifyEmail}>
+             Verify Your email
+        </button>
 
         {/* DIVIDER */}
         <div className="flex items-center my-5">
