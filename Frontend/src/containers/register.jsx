@@ -78,7 +78,7 @@ const RegisterUser = () => {
             return setMessage({ type: "error", text: "Passwords mismatch" });
 
         try {
-            await registerUser({
+           const res = await registerUser({
                 username,
                 email,
                 password,
