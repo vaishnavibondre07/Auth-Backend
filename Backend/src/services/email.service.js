@@ -16,7 +16,7 @@ export async function sendEmail(to, subject, text = "", html = "") {
             },
             to: [{ email: to }],
             subject,
-            textContent: text,
+            textContent: text || "Please view this email in an HTML supported email client.",
             htmlContent: html,
         });
 
