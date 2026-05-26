@@ -110,8 +110,8 @@ export async function registerUser(req, res) {
         role : role || "user",
         verified: false  
     });
-    
-      console.log("OTP HTML:", generateOTPHtml(otp)); // 👈 add before sendEmail call
+
+      console.log("OTP HTML:", generateOTPHtml(otp)); 
     await sendEmail(
         email,
         "Verify your email",
@@ -511,6 +511,8 @@ export async function verifyEmail(req, res) {
                 message: "Invalid OTP"
             });
         }
+        console.log("valid otp");
+        
 
         // OTP EXPIRY CHECK
         if (otpDoc.expiresAt < new Date()) {
@@ -523,6 +525,8 @@ export async function verifyEmail(req, res) {
             return res.status(400).json({
                 message: "OTP expired"
             });
+
+            console.log("otp not expired")
         }
 
         // COMPARE OTP
@@ -555,6 +559,8 @@ export async function verifyEmail(req, res) {
             return res.status(400).json({
                 message: "Invalid OTP"
             });
+
+            console.log("valid otp")
         }
 
         // VERIFY USER
@@ -570,6 +576,9 @@ export async function verifyEmail(req, res) {
                 message: "User not found"
             });
         }
+
+        console.log("user found");
+        
 
 
         if (user.verified === true) {

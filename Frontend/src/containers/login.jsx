@@ -95,22 +95,29 @@ export const LoginUser = () => {
 
       navigate(res.data.role === "admin" ? "/admin" : "/profile");
     } catch (err) {
-      const data = err?.data;
+        const data = err?.data;
 
-      if (data?.code === "EMAIL_NOT_VERIFIED") {
-          navigate("/verify-email", {
-          state: { email: data.email }
-       });
-       return;
-      }
+        if (data?.code === "EMAIL_NOT_VERIFIED") {
+           setMessage({
+                type: "error",
+                text: data?.message || "Please verify your email before logging in.",
+           });
 
-  setMessage({
-    type: "error",
-    text: data?.message || "Login failed",
-  });
-      fetchCaptcha();
-    }
-  };
+          setTimeout(() => {
+             navigate("/verify-email", {
+                state: { email: data?.email },
+          });
+        }, 1500); // small delay so user sees the message
+        return;
+       }
+
+      setMessage({
+         type: "error",
+         text: data?.message || "Login failed",
+      });
+
+     fetchCaptcha();
+   }
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-8">
@@ -193,9 +200,20 @@ export const LoginUser = () => {
           </AuthButton>
         </form>
 
-        <button onClick={handleVerifyEmail}>
-             Verify Your email
-        </button>
+        
+        <p className="text-center text-xs text-gray-500 mt-3">
+               Email not verified?{" "}
+               <button
+                 type="button"
+                   onClick={() => {
+                       if (!email) return setMessage({ type: "error", text: "Enter your email first." });
+                        navigate("/verify-email", { state: { email } });
+                    }}
+                    className="text-blue-600 hover:underline font-medium"
+                >
+                     Resend verification
+               </button>
+        </p>
 
         {/* DIVIDER */}
         <div className="flex items-center my-5">
