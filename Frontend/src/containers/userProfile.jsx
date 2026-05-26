@@ -7,6 +7,8 @@ import { useRefreshTokenMutation, useLogoutUserMutation, useDeleteAccountMutatio
 import {store} from "../store/store";
 import MessageBox from "../components/MessageBox";
 import { logout } from "../features/authSlice";
+import { useSelector } from "react-redux";
+
 
 
 const UserProfile = () => {
@@ -15,6 +17,7 @@ const UserProfile = () => {
 
    const navigate = useNavigate();
    const dispatch = useDispatch();
+   const user = useSelector((state) => state.auth.user)
 
    const { data, isLoading, error, refetch} = useGetProfileQuery(undefined, {skip : !user});
 
