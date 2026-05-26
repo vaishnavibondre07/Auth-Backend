@@ -270,7 +270,8 @@ export const LoginUser = () => {
       </section>
     </main>
   );
-};
+ };
+}
 
 
 
