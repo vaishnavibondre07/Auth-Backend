@@ -1,28 +1,57 @@
-import { Resend } from "resend";
+import * as Brevo from "@getbrevo/brevo";
 import config from "../config/config.js";
 
-const resend = new Resend(config.RESEND_API_KEY);
+const client = new Brevo.TransactionalEmailsApi();
+client.authentications["api-key"].apiKey = config.BREVO_API_KEY;
 
 export async function sendEmail(to, subject, text = "", html = "") {
     try {
-        const { data, error } = await resend.emails.send({
-            from: "onboarding@resend.dev", //  works for any user
-            to,
+        await client.sendTransacEmail({
+            sender: { 
+                email: "vaishnavibondre1234@gmail.com",
+                name: "Auth App"
+            },
+            to: [{ email: to }],
             subject,
-            text,
-            html,
+            textContent: text,
+            htmlContent: html,
         });
 
-        if (error) throw new Error(error.message);
-
-        console.log("Email sent:", data.id);
-        return { success: true, messageId: data.id };
+        console.log("Email sent successfully");
+        return { success: true };
 
     } catch (error) {
         console.log("Email send failed:", error.message);
         return { success: false, error: error.message };
     }
 }
+
+
+// import { Resend } from "resend";
+// import config from "../config/config.js";
+
+// const resend = new Resend(config.RESEND_API_KEY);
+
+// export async function sendEmail(to, subject, text = "", html = "") {
+//     try {
+//         const { data, error } = await resend.emails.send({
+//             from: "onboarding@resend.dev", //  works for any user
+//             to,
+//             subject,
+//             text,
+//             html,
+//         });
+
+//         if (error) throw new Error(error.message);
+
+//         console.log("Email sent:", data.id);
+//         return { success: true, messageId: data.id };
+
+//     } catch (error) {
+//         console.log("Email send failed:", error.message);
+//         return { success: false, error: error.message };
+//     }
+// }
 
 // import nodemailer from "nodemailer";
 // import config from "../config/config.js";
