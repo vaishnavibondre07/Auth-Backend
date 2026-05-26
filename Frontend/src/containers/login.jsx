@@ -161,9 +161,9 @@ export const LoginUser = () => {
             type="button"
             onClick={() => {
               if (!email) return setMessage({ type: "error", text: "Enter your email first." });
-              navigate("/verify-email", { state: { email } });
+              navigate("/resend-otp", { state: { email } });
             }}
-            className="text-blue-600 hover:underline font-medium"
+            className="text-blue-600 hover:underline text:base"
           >
             Resend verification
           </button>

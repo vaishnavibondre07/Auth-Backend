@@ -660,7 +660,7 @@ export async function resendOtp(req, res) {
         user: user._id,
         otpHash: hashedOtp,
         purpose: "EMAIL_VERIFICATION",
-        expiresAt: new Date(Date.now() + 30 * 1000),
+        expiresAt: new Date(Date.now() + 60 * 1000),
       });
 
       await sendEmail(email, "Verify your email", "", generateOTPHtml(otp));
@@ -766,7 +766,7 @@ export async function forgotPassword(req, res) {
          user: user._id,
          otpHash: hashedOTP,
          purpose: "FORGOT_PASSWORD",
-         expiresAt: new Date(Date.now() + 5 * 60 * 1000)
+         expiresAt: new Date(Date.now() + 60 * 1000)
       });
 
       return res.status(200).json({
