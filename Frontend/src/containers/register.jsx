@@ -104,6 +104,12 @@ const RegisterUser = () => {
     return (
         <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-100 via-blue-50 to-cyan-100 px-4 py-8">
 
+             <MessageBox
+                type={messageType}
+                text={message}
+                onClose={() => setMessage("")}
+            />
+
             <section className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-5 sm:p-8 space-y-5">
 
                 {/* HEADER */}

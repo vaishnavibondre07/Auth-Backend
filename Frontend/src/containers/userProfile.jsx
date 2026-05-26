@@ -103,6 +103,12 @@ const UserProfile = () => {
       return (
          <div className="min-h-screen flex items-center justify-center bg-gray-100">
 
+            <MessageBox
+                  type={messageType}
+                  text={message}
+                  onClose={() => setMessage("")}
+            />
+
             <div className="bg-white p-8 rounded-2xl shadow-lg">
 
                <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>

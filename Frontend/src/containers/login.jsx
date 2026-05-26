@@ -100,6 +100,13 @@ export const LoginUser = () => {
   return (
     <main className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-8">
 
+        <MessageBox
+              type={messageType}
+              text={message}
+              onClose={() => setMessage("")}
+                  
+        />
+
       <section className="w-full max-w-md bg-white shadow-xl rounded-2xl p-5 sm:p-8 text-gray-800">
 
         {/* HEADER */}
