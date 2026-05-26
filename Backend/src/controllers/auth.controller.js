@@ -639,104 +639,81 @@ export async function verifyEmail(req, res) {
 // ******************************************* Resend OTP *************************************************
 
 export async function resendOtp(req, res) {
+  try {
+    const { email } = req.body;
 
-   try {
+    let otpData = await otpModel.findOne({ email });
 
-      const { email } = req.body;
+    // CREATE IF NOT EXISTS ← only change
+    if (!otpData) {
+      const user = await userModel.findOne({ email });
 
-      // FIND OTP DATA
-      const otpData = await otpModel.findOne({ email });
-
-      if (!otpData) {
-         return res.status(404).json({
-            success: false,
-            message: "OTP data not found"
-         });
+      if (!user) {
+        return res.status(404).json({ success: false, message: "User not found" });
       }
 
-      // CHECK IF BLOCKED
-      if (
-         otpData.blockedUntil &&
-         otpData.blockedUntil > new Date()
-      ) {
-
-         const remainingTime = Math.ceil(
-            (otpData.blockedUntil - new Date()) / 1000
-         );
-
-         return res.status(429).json({
-            success: false,
-            message: `Too many attempts. Try again after ${remainingTime} sec`
-         });
-      }
-
-      // RESET BLOCK AFTER TIME PASSES
-
-      if ( otpData.blockedUntil && otpData.blockedUntil < new Date()) {
-              otpData.blockedUntil = null;
-              otpData.resendCount = 0;
-
-              await otpData.save();
-          }
-
-      // CHECK RESEND LIMIT
-      if (otpData.resendCount >= 5) {
-
-         otpData.blockedUntil =
-            new Date(Date.now() + 2 * 60 * 1000);
-
-         await otpData.save();
-
-         return res.status(429).json({
-            success: false,
-            message: "Too many resend attempts. Account blocked for 2 minutes"
-         });
-      }
-
-
-      // GENERATE NEW OTP
       const otp = generateOTP();
-
-      // HASH OTP
       const hashedOtp = await bcrypt.hash(otp, 10);
 
-      // UPDATE OTP DATA
-      otpData.otpHash = hashedOtp;
+      await otpModel.create({
+        email,
+        user: user._id,
+        otpHash: hashedOtp,
+        purpose: "EMAIL_VERIFICATION",
+        expiresAt: new Date(Date.now() + 30 * 1000),
+      });
 
-      // OTP VALID FOR 30 SEC
-      otpData.expiresAt =
-         new Date(Date.now() + 30 * 1000);
+      await sendEmail(email, "Verify your email", "", generateOTPHtml(otp));
 
-      // INCREASE RESEND COUNT
-      otpData.resendCount += 1;
+      return res.status(200).json({ success: true, message: "OTP sent successfully" });
+    }
 
+    // CHECK IF BLOCKED
+    if (otpData.blockedUntil && otpData.blockedUntil > new Date()) {
+      const remainingTime = Math.ceil((otpData.blockedUntil - new Date()) / 1000);
+      return res.status(429).json({
+        success: false,
+        message: `Too many attempts. Try again after ${remainingTime} sec`,
+      });
+    }
+
+    // RESET BLOCK AFTER TIME PASSES
+    if (otpData.blockedUntil && otpData.blockedUntil < new Date()) {
+      otpData.blockedUntil = null;
+      otpData.resendCount = 0;
       await otpData.save();
+    }
 
-      // SEND EMAIL
-      await sendEmail(
-         email,
-         "Resend OTP",
-          "",
-         generateOTPHtml(otp)
-      );
-
-      return res.status(200).json({
-         success: true,
-         message: "OTP resent successfully"
+    // CHECK RESEND LIMIT
+    if (otpData.resendCount >= 5) {
+      otpData.blockedUntil = new Date(Date.now() + 2 * 60 * 1000);
+      await otpData.save();
+      return res.status(429).json({
+        success: false,
+        message: "Too many resend attempts. Account blocked for 2 minutes",
       });
+    }
 
-   } catch (error) {
+    // GENERATE NEW OTP
+    const otp = generateOTP();
+    const hashedOtp = await bcrypt.hash(otp, 10);
 
-      console.log(error);
+    otpData.otpHash = hashedOtp;
+    otpData.expiresAt = new Date(Date.now() + 30 * 1000);
+    otpData.resendCount += 1;
 
-      return res.status(500).json({
-         success: false,
-         message: "Internal Server Error"
-      });
+    await otpData.save();
 
-   }
+    await sendEmail(email, "Resend OTP", "", generateOTPHtml(otp));
 
-};
+    return res.status(200).json({ success: true, message: "OTP resent successfully" });
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+}
+
 
 // ******************************************* Forgot Password *************************************************
 
@@ -1198,3 +1175,106 @@ export const checkSession = async (req, res) => {
     });
   }
 };
+
+
+
+
+// export async function resendOtp(req, res) {
+
+//    try {
+
+//       const { email } = req.body;
+
+//       // FIND OTP DATA
+//       const otpData = await otpModel.findOne({ email });
+
+//       if (!otpData) {
+//          return res.status(404).json({
+//             success: false,
+//             message: "OTP data not found"
+//          });
+//       }
+
+//       // CHECK IF BLOCKED
+//       if (
+//          otpData.blockedUntil &&
+//          otpData.blockedUntil > new Date()
+//       ) {
+
+//          const remainingTime = Math.ceil(
+//             (otpData.blockedUntil - new Date()) / 1000
+//          );
+
+//          return res.status(429).json({
+//             success: false,
+//             message: `Too many attempts. Try again after ${remainingTime} sec`
+//          });
+//       }
+
+//       // RESET BLOCK AFTER TIME PASSES
+
+//       if ( otpData.blockedUntil && otpData.blockedUntil < new Date()) {
+//               otpData.blockedUntil = null;
+//               otpData.resendCount = 0;
+
+//               await otpData.save();
+//           }
+
+//       // CHECK RESEND LIMIT
+//       if (otpData.resendCount >= 5) {
+
+//          otpData.blockedUntil =
+//             new Date(Date.now() + 2 * 60 * 1000);
+
+//          await otpData.save();
+
+//          return res.status(429).json({
+//             success: false,
+//             message: "Too many resend attempts. Account blocked for 2 minutes"
+//          });
+//       }
+
+
+//       // GENERATE NEW OTP
+//       const otp = generateOTP();
+
+//       // HASH OTP
+//       const hashedOtp = await bcrypt.hash(otp, 10);
+
+//       // UPDATE OTP DATA
+//       otpData.otpHash = hashedOtp;
+
+//       // OTP VALID FOR 30 SEC
+//       otpData.expiresAt =
+//          new Date(Date.now() + 30 * 1000);
+
+//       // INCREASE RESEND COUNT
+//       otpData.resendCount += 1;
+
+//       await otpData.save();
+
+//       // SEND EMAIL
+//       await sendEmail(
+//          email,
+//          "Resend OTP",
+//           "",
+//          generateOTPHtml(otp)
+//       );
+
+//       return res.status(200).json({
+//          success: true,
+//          message: "OTP resent successfully"
+//       });
+
+//    } catch (error) {
+
+//       console.log(error);
+
+//       return res.status(500).json({
+//          success: false,
+//          message: "Internal Server Error"
+//       });
+
+//    }
+
+// };

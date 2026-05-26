@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useLoginUserMutation, useCreateCaptchaMutation, useGoogleLoginMutation } from "../api/authApi";
+import { useLoginUserMutation, useCreateCaptchaMutation, useGoogleLoginMutation , useResendOTPMutation} from "../api/authApi";
 import MessageBox from "../components/MessageBox";
 import { validateEmail, validatePassword } from "../utils/validations";
 import { GoogleLogin } from "@react-oauth/google";
@@ -14,6 +14,8 @@ import AuthButton from "../components/auth/AuthButton";
 export const LoginUser = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const [resendOtp] = useResendOTPMutation();
 
   const [loginUser, { isLoading }] = useLoginUserMutation();
   const [createCaptcha] = useCreateCaptchaMutation();
@@ -71,21 +73,28 @@ export const LoginUser = () => {
       navigate(res.data.role === "admin" ? "/admin" : "/profile");
 
     } catch (err) {
-      const data = err?.data;
+        const data = err?.data;
 
-      if (data?.code === "EMAIL_NOT_VERIFIED") {
+        if (data?.code === "EMAIL_NOT_VERIFIED") {
+        try {
+            await resendOtp(data?.email).unwrap();
+        } catch {
+      
+        }
+
         setMessage({
-          type: "error",
-          text: data?.message || "Please verify your email before logging in.",
+           type: "error",
+           text: data?.message || "Please verify your email before logging in.",
         });
-        setTimeout(() => {
-          navigate("/verify-email", { state: { email: data?.email } });
-        }, 1500);
-        return;
-      }
 
-      setMessage({ type: "error", text: data?.message || "Login failed" });
-      fetchCaptcha();
+        setTimeout(() => {
+           navigate("/verify-email", { state: { email: data?.email } });
+         }, 1500);
+         return;
+        }
+
+        setMessage({ type: "error", text: data?.message || "Login failed" });
+        fetchCaptcha();
     }
   };
 
