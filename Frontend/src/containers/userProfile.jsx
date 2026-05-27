@@ -26,17 +26,11 @@ const UserProfile = () => {
 
    const [message, setMessage] = useState({type: "", text:""});
 
-   const [refreshToken] =
-      useRefreshTokenMutation();
+   const [refreshToken] = useRefreshTokenMutation();
 
-   const [logoutUser,
-      { isLoading: isLoggingOut }
-   ] = useLogoutUserMutation();
+   const [logoutUser, { isLoading: isLoggingOut } ] = useLogoutUserMutation();
 
-   const [
-   deleteAccount,
-   { isLoading: isDeleting }
-] = useDeleteAccountMutation();
+   const [ deleteAccount, { isLoading: isDeleting }] = useDeleteAccountMutation();
 
 
    const handleLogout = async () => {
@@ -48,21 +42,15 @@ const UserProfile = () => {
          dispatch(logout());
 
          dispatch( profileApi.util.resetApiState());
-         console.log(store.getState().profileApi.queries);
+         // console.log(store.getState().profileApi.queries);
 
-          setMessage({
-            type: "success",
-            text: res.message
-         })
+          setMessage({  type: "success",  text: res.message })
 
          navigate("/login");
 
       } catch (error) {
 
-         setMessage({
-            type: "error",
-            text: error.message,
-         });
+         setMessage({  type: "error",  text: error.message });
       }
    };
 

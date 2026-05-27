@@ -53,20 +53,11 @@ export const LoginUser = () => {
     }
 
     if (!validatePassword(password)) {
-      return setMessage({
-        type: "error",
-        text: "Password must be 8+ chars with number & special char",
-      });
+      return setMessage({ type: "error", text: "Password must be 8+ chars with number & special char",});
     }
 
     try {
-      const res = await loginUser({
-        email,
-        password,
-        role,
-        captchaId: captcha.id,
-        captchaAnswer: captcha.answer,
-      }).unwrap();
+      const res = await loginUser({ email, password, role, captchaId: captcha.id, captchaAnswer: captcha.answer}).unwrap();
 
       dispatch(setUser(res.data));
       setMessage({ type: "success", text: res.message });
@@ -82,18 +73,17 @@ export const LoginUser = () => {
       
         }
 
-        setMessage({
-           type: "error",
-           text: data?.message || "Please verify your email before logging in.",
-        });
+        setMessage({ type: "error", text: data?.message || "Please verify your email before logging in."});
 
         setTimeout(() => {
            navigate("/verify-email", { state: { email: data?.email } });
          }, 1500);
          return;
+
         }
 
         setMessage({ type: "error", text: data?.message || "Login failed" });
+
         fetchCaptcha();
     }
   };
@@ -102,13 +92,11 @@ export const LoginUser = () => {
     <main className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-8">
       <section className="w-full max-w-md bg-white shadow-xl rounded-2xl p-5 sm:p-8 text-gray-800">
 
-        {/* HEADER */}
         <div className="text-center">
           <h1 className="text-xl sm:text-2xl font-bold text-gray-800">Welcome Back</h1>
           <p className="text-sm text-gray-500 mt-1">Login to your account</p>
         </div>
 
-        {/* MESSAGE */}
         {message.text && (
           <div className="mt-4">
             <MessageBox
@@ -119,7 +107,6 @@ export const LoginUser = () => {
           </div>
         )}
 
-        {/* FORM */}
         <form onSubmit={handleLogin} className="mt-6 space-y-4">
           <AuthInput
             label="Email"
@@ -176,7 +163,6 @@ export const LoginUser = () => {
           <div className="flex-1 h-px bg-gray-200" />
         </div>
 
-        {/* GOOGLE LOGIN */}
         <div className="flex justify-center">
           <GoogleLogin
             onSuccess={async (cred) => {
@@ -193,7 +179,6 @@ export const LoginUser = () => {
           />
         </div>
 
-        {/* SIGNUP */}
         <p className="text-center text-sm text-gray-600 mt-6">
           Don't have an account?{" "}
           <Link to="/" className="text-blue-600 font-medium hover:underline">Sign up</Link>

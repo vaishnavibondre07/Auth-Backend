@@ -93,6 +93,7 @@ const RegisterUser = () => {
             setTimeout(() => {
                 navigate("/verify-email", { state: { email } });
             }, 1000);
+            
         } catch (err) {
             setMessage({
                 type: "error",
@@ -104,7 +105,7 @@ const RegisterUser = () => {
     };
 
     return (
-        <main className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-100 via-blue-50 to-cyan-100 px-4 py-8">
+        <main className="min-h-screen flex items-center justify-center bg-linear-to-br from-sky-100 via-blue-50 to-cyan-100 px-4 py-8">
 
             <section className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-5 sm:p-8 space-y-5">
 

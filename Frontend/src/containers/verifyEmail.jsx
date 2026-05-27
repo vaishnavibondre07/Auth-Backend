@@ -4,10 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { OTPVerification } from "../components/OTPVerification";
 import  MessageBox  from "../components/MessageBox";
 
-import {
-    useVerifyEmailMutation,
-    useResendOTPMutation
-} from "../api/authApi";
+import { useVerifyEmailMutation, useResendOTPMutation} from "../api/authApi";
 
 export const VerifyEmail = () => {
 
@@ -26,25 +23,18 @@ export const VerifyEmail = () => {
     const [canResend, setCanResend] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    const showMessage = (type, msg) => {
-        setMessageType(type);
-        setMessage(msg);
-    };
+    const showMessage = (type, msg) => { setMessageType(type); setMessage(msg); };
 
-    // TIMER LOGIC
     useEffect(() => {
-        let interval;
+       if (timer <= 0){
+        setCanResend(true);
+        return;
+       }
 
-        if (timer > 0) {
-            interval = setInterval(() => {
-                setTimer((t) => t - 1);
-            }, 1000);
-        }
-
-        if (timer === 0) {
-            setCanResend(true);
-        }
-
+       const interval = setInterval(() => {
+        setTimer((t) => t - 1);
+       }, 1000);
+       
         return () => clearInterval(interval);
     }, [timer]);
 
@@ -63,9 +53,9 @@ export const VerifyEmail = () => {
 
             showMessage("success", "Email verified successfully");
 
-            // setTimeout(() => {
-            //     navigate("/login");
-            // }, 1000);
+            setTimeout(() => {
+                navigate("/login");
+            }, 1000);
 
         } catch (err) {
             showMessage("error", err?.data?.message || "Invalid OTP");

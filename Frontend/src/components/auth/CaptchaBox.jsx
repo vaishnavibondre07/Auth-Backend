@@ -34,7 +34,7 @@ const CaptchaBox = ({
 
             <div className="border bg-blue-50 rounded-xl p-3 sm:p-4">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                    <div className="flex items-center justify-between gap-3 bg-white border rounded-lg px-3 py-2.5 w-full sm:w-auto sm:min-w-[140px]">
+                    <div className="flex items-center justify-between gap-3 bg-white border rounded-lg px-3 py-2.5 w-full sm:w-auto sm:min-w-35">
                         <span className="font-bold text-blue-700 text-sm sm:text-base break-all">
                             {question}
                         </span>
@@ -53,7 +53,7 @@ const CaptchaBox = ({
                         placeholder="Answer"
                         value={answer}
                         onChange={(e) => handleAnswerChange(e.target.value)}
-                        className="w-full flex-1 px-3 py-2.5 min-h-[44px] text-base sm:text-sm border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        className="w-full flex-1 px-3 py-2.5 min-h-11 text-base sm:text-sm border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     />
                 </div>
             </div>

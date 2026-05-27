@@ -13,6 +13,7 @@ const RegisterForm = ({ form, handleChange, handleSubmit, isLoading, captcha, se
                 name="username"
                 value={form.username}
                 onChange={handleChange}
+                placeholder="Enter Username"
             />
 
             <AuthInput
@@ -21,6 +22,7 @@ const RegisterForm = ({ form, handleChange, handleSubmit, isLoading, captcha, se
                 type="email"
                 value={form.email}
                 onChange={handleChange}
+                placeholder="Enter Email"
             />
 
             <PasswordInput
@@ -28,6 +30,7 @@ const RegisterForm = ({ form, handleChange, handleSubmit, isLoading, captcha, se
                 name="password"
                 value={form.password}
                 onChange={handleChange}
+                placeholder="Enter Password"
             />
 
             <PasswordInput
@@ -35,6 +38,7 @@ const RegisterForm = ({ form, handleChange, handleSubmit, isLoading, captcha, se
                 name="confirmPassword"
                 value={form.confirmPassword}
                 onChange={handleChange}
+                placeholder="Enter Confirm Password"
             />
 
             {/* CAPTCHA */}

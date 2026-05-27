@@ -21,14 +21,14 @@ const PasswordInput = ({ label, placeholder, value, name, onChange}) => {
               onChange={onChange}
               aria-label={label}
 
-              className="w-full px-3 py-2.5 sm:py-2.5 min-h-[44px] text-base sm:text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-20"
+              className="w-full px-3 py-2.5 sm:py-2.5 min-h-11 text-base sm:text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-20"
             />
 
            <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
               aria-label={showPassword ? "Hide password" : "Show password"}
-             className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1 rounded-md bg-gray-100 hover:bg-gray-200 text-sm transition"
+              className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1 rounded-md bg-gray-100 hover:bg-gray-200 text-sm transition"
            >
              {showPassword ? "Hide" : "Show"}
            </button>
