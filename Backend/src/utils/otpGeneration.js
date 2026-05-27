@@ -86,7 +86,7 @@ export function generateOTPHtml(otp) {
 
 <body>
   <div class="container">
-    <div class="logo">YourApp</div>
+    <div class="logo">Authentication App</div>
 
     <h2>OTP Verification</h2>
 

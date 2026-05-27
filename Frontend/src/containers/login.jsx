@@ -161,7 +161,7 @@ export const LoginUser = () => {
             type="button"
             onClick={() => {
               if (!email) return setMessage({ type: "error", text: "Enter your email first." });
-              navigate("/resend-otp", { state: { email } });
+              navigate("/verify-email", { state: { email } });
             }}
             className="text-blue-600 hover:underline text:base"
           >
