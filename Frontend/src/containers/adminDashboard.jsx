@@ -189,7 +189,7 @@ export const AdminDashboard = () => {
                         <thead>
                             <tr className="bg-blue-600 text-white">
 
-                                <th className="p-4 text-left">#</th>
+                                <th className="p-4 text-left">Sr no.</th>
                                 <th className="p-4 text-left">Username</th>
                                 <th className="p-4 text-left">Email</th>
                                 <th className="p-4 text-left">Role</th>
