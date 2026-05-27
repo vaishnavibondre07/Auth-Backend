@@ -63,9 +63,9 @@ export const VerifyEmail = () => {
 
             showMessage("success", "Email verified successfully");
 
-            setTimeout(() => {
-                navigate("/login");
-            }, 1000);
+            // setTimeout(() => {
+            //     navigate("/login");
+            // }, 1000);
 
         } catch (err) {
             showMessage("error", err?.data?.message || "Invalid OTP");
@@ -88,6 +88,9 @@ export const VerifyEmail = () => {
             setCanResend(false);
 
         } catch (err) {
+            if(err.status == 429) {
+                showMessage("error", "Too many attempts..Try after sometime")
+            }
             showMessage("error", "Failed to resend OTP");
         } finally {
             setLoading(false);

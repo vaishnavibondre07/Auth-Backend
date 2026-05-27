@@ -112,12 +112,12 @@ export async function registerUser(req, res) {
     });
 
       console.log("OTP HTML:", generateOTPHtml(otp)); 
-    await sendEmail(
-        email,
-        "Verify your email",
-        "",
-        generateOTPHtml(otp)
-    );
+         await sendEmail(
+           email,
+           "Verify your email",
+           "",
+           generateOTPHtml(otp)
+         );
 
     const otpHash = await bcrypt.hash(otp.toString(), 10);
     
@@ -165,7 +165,7 @@ export async function loginUser(req, res) {
     const user = await User.findOne({ email });
   
     if (!user) {
-      return res.status(400).json({
+      return res.status(401).json({
         success: false,
         message: "Invalid email or password",
       });
@@ -185,7 +185,7 @@ export async function loginUser(req, res) {
         (user.lockUntil - Date.now()) / 1000
       );
 
-      return res.status(400).json({
+      return res.status(429).json({
         success: false,
         message: `Account is locked. Try again in ${remainingTime} seconds`,
       });
@@ -208,7 +208,7 @@ export async function loginUser(req, res) {
 
         await user.save();
 
-        return res.status(400).json({
+        return res.status(429).json({
           success: false,
           message: "Account locked for 1 minute due to too many failed attempts",
         });
@@ -216,7 +216,7 @@ export async function loginUser(req, res) {
 
       await user.save();
 
-      return res.status(400).json({
+      return res.status(401).json({
         success: false,
         message: `Invalid email or password. ${remainingAttempts} attempts remaining`,
       });
