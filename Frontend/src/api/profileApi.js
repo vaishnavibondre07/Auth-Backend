@@ -22,8 +22,8 @@ export const profileApi = createApi({
         }),
 
         getAllUsers : builder.query({
-            query : () => ({
-                url : "/admin/users",
+            query : ({page = 1, limit = 10}) => ({
+                url : `/admin/users?page=${page}&limit=${limit}`,
                 method : "GET"
             }),
              providesTags: ['profile']

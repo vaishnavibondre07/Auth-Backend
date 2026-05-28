@@ -10,12 +10,15 @@ export const AdminDashboard = () => {
     useSessionChecker();
 
     const navigate = useNavigate();
-    const { data, isLoading, error } = useGetAllUsersQuery();
+
+    const [page, setPage] = useState(1);
+    const { data, isLoading, error } = useGetAllUsersQuery({ page, limit : 5 });
 
     const [searchTerm, setSearchTerm] = useState("");
     const [roleFilter, setRoleFilter] = useState("all");
     const [verificationFilter, setVerificationFilter] = useState("all");
     const [message, setMessage] = useState({type : "" ,text : ""})
+    
  
     const filteredUsers = data?.data?.filter((user) => {
 
@@ -33,6 +36,8 @@ export const AdminDashboard = () => {
 
         return matchesSearch && matchesRole && matchesVerification;
     });
+
+    const totalPages = data?.totalPages || 1;
 
     if (isLoading) {
         return (
@@ -140,7 +145,7 @@ export const AdminDashboard = () => {
                             >
                                 <div className="flex items-start justify-between gap-2">
                                     <div className="min-w-0">
-                                        <p className="text-xs text-gray-500">#{index + 1}</p>
+                                        <p className="text-xs text-gray-500">{(page - 1) * 10 + index + 1}</p>
                                         <h3 className="font-semibold text-gray-900 truncate">
                                             {user.username}
                                         </h3>
@@ -213,7 +218,7 @@ export const AdminDashboard = () => {
 
                                         {/* SERIAL */}
                                         <td className="p-4 font-medium text-gray-700">
-                                            {index + 1}
+                                            {(page - 1) * 10 + index + 1}
                                         </td>
 
                                         {/* USERNAME */}
@@ -277,6 +282,27 @@ export const AdminDashboard = () => {
                     </table>
 
                 </div>
+
+                <div className="flex items-center justify-center gap-4 mt-6">
+
+                  <button
+                    disabled={page === 1}
+                    onClick={() => setPage(page - 1)}
+                    className="px-4 py-2 bg-gray-200 rounded-lg disabled:opacity-50"
+                  > Prev
+                  </button>
+
+                  <span className="font-semibold">
+                     Page {page} of {totalPages}
+                  </span>
+
+                  <button
+                    disabled={page === totalPages}
+                    onClick={() => setPage(page + 1)}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg disabled:opacity-50"
+                   > Next
+                   </button>
+               </div>
 
             </div>
 

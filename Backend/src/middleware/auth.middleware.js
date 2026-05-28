@@ -5,7 +5,11 @@ import Session from "../models/session.model.js";
 export async function authMiddleware(req,res,next){
     try{
 
+        console.log(req.cookies)
+
         const token = req.cookies.accessToken;
+        console.log(token);
+        
 
         if(!token){
 

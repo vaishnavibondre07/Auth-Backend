@@ -291,7 +291,7 @@ export async function loginUser(req, res) {
 
     return res.status(500).json({
       success: false,
-      message: "Internal Server Error",
+      message: error.message
     });
   }
 }
