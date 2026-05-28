@@ -43,6 +43,19 @@ if(!process.env.RESEND_API_KEY){
 if(!process.env.BREVO_API_KEY){
     throw new Error("BREVO_API_KEY is not defined")
 }
+
+if(!process.env.CLOUD_NAME){
+    throw new Error("CLOUD_NAME is not defined")
+}
+
+if(!process.env.CLOUD_API_KEY){
+    throw new Error("CLOUD_API_KEY is not defined")
+}
+
+if(!process.env.CLOUD_API_SECRET){
+    throw new Error("CLOUD_API_SECRET is not defined")
+}
+
 const config = {
     PORT:process.env.PORT,
     MONGO_URI: process.env.MONGO_URI,
@@ -54,7 +67,10 @@ const config = {
     SITE_KEY: process.env.SITE_KEY,
     SECRET_KEY: process.env.SECRET_KEY,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
-    BREVO_API_KEY: process.env.BREVO_API_KEY
+    BREVO_API_KEY: process.env.BREVO_API_KEY,
+    CLOUD_NAME: process.env.CLOUD_NAME,
+    CLOUD_API_KEY: process.env.CLOUD_API_KEY,
+    CLOUD_API_SECRET: process.env.CLOUD_API_SECRET
 }
 
 export default config;
