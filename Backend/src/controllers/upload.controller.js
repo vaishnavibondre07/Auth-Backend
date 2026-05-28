@@ -24,7 +24,10 @@ export const uploader = async (req, res) => {
             url: result.url,
             public_id: result.public_id,
             fileType: file.mimetype,
+            user: req.user.userId
           });
+
+          console.log(savedFile)
 
           return res.status(200).json({
             success: true,
