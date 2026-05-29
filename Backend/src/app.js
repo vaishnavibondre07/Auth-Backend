@@ -25,7 +25,7 @@ app.use(cookieParser());
 
 app.use("/api/auth", authRouter);
 app.use("/api", profileRouter);
-app.use("/api",uploadRouter);
+app.use("/api/files",uploadRouter);
 
 
 export default app;

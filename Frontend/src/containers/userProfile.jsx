@@ -9,6 +9,7 @@ import MessageBox from "../components/MessageBox";
 import { logout } from "../features/authSlice";
 import { useSelector } from "react-redux";
 import { useSessionChecker } from "../hook/useSessionChecker";
+import { useUploadFileMutation, useGetUserFilesQuery,  useDeleteFileMutation,} from "../api/fileApi";
 
 
 
@@ -28,9 +29,17 @@ const UserProfile = () => {
 
    const [refreshToken] = useRefreshTokenMutation();
 
+   const { data: filesData, isLoading: isFilesLoading} = useGetUserFilesQuery();
+
+   const [uploadFile] = useUploadFileMutation();
+
+   const [deleteFile] = useDeleteFileMutation();
+
    const [logoutUser, { isLoading: isLoggingOut } ] = useLogoutUserMutation();
 
    const [ deleteAccount, { isLoading: isDeleting }] = useDeleteAccountMutation();
+
+   const [selectedFile, setSelectedFile] = useState(null);
 
 
    const handleLogout = async () => {
@@ -86,6 +95,54 @@ const UserProfile = () => {
          navigate("/profile");
       }
    };
+
+   const handleFileUpload = async (e) => {
+
+   const file = e.target.files[0];
+
+   if (!file) return;
+
+   const formData = new FormData();
+
+   formData.append("files", file);
+
+   try {
+
+      const res = await uploadFile(formData).unwrap();
+
+      setMessage({
+         type: "success",
+         text: "File uploaded successfully",
+      });
+
+   } catch (error) {
+
+      setMessage({
+         type: "error",
+         text: error?.data?.message || "Upload failed",
+      });
+   }
+};
+
+const handleDeleteFile = async (id) => {
+
+   try {
+
+      await deleteFile(id).unwrap();
+
+      setMessage({
+         type: "success",
+         text: "File deleted successfully",
+      });
+
+   } catch (error) {
+
+      setMessage({
+         type: "error",
+         text: error?.data?.message || "Delete failed",
+      });
+   }
+};
 
 
 
@@ -322,10 +379,304 @@ const UserProfile = () => {
 
             </div>
 
+            {/* FILE SECTION */}
+
+            <div className="bg-white rounded-2xl shadow-lg p-5 sm:p-6 mt-6 sm:mt-8">
+
+               {/* HEADER */}
+
+               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+
+                 <div>
+                    <h2 className="text-2xl font-bold text-gray-800">
+                         My Files
+                    </h2>
+
+                    <p className="text-sm text-gray-500 mt-1">
+                       Upload and manage your files. You can view or delete your files anytime.
+                    </p>
+                 </div>
+
+                 {/* UPLOAD BUTTON */}
+
+                 <div>
+
+                    <input
+                       type="file"
+                       id="fileUpload"
+                       className="hidden"
+                       onChange={handleFileUpload}
+                    />
+
+                    <label
+                       htmlFor="fileUpload"
+                       className="inline-flex items-center gap-2 bg-blue-600 text-white px-5 py-3 rounded-xl cursor-pointer hover:bg-blue-700 transition font-medium min-h-[44px]"
+                     >
+
+                     <svg
+                       xmlns="http://www.w3.org/2000/svg"
+                       className="w-5 h-5"
+                       fill="none"
+                       viewBox="0 0 24 24"
+                       stroke="currentColor"
+                     >
+                         <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1M12 4v12m0-12l-4 4m4-4l4 4"
+                         />
+                     </svg>
+
+                           Upload File
+
+                     </label>
+                  </div>
+            </div>
+
+            {/* FILE LIST */}
+
+            <div className="mt-6 overflow-x-auto">
+
+               {isFilesLoading ? (
+
+                 <div className="flex justify-center py-10">
+
+                   <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+
+                 </div>
+
+               )  : filesData?.files?.length === 0 ? (
+
+               <div className="border-2 border-dashed border-gray-300 rounded-2xl p-10 text-center">
+
+                  <div className="text-5xl">  📁  </div>
+
+                  <h3 className="mt-4 text-lg font-semibold text-gray-700">
+                      No files uploaded yet
+                  </h3>
+
+                  <p className="text-sm text-gray-500 mt-2">
+                        Upload your first file to manage it here.
+                  </p>
+
+               </div>
+
+               ) : (
+
+               <table className="w-full min-w-[700px]">
+
+                  <thead>
+
+                     <tr className="bg-gray-50 border border-gray-200">
+
+                      <th className="text-left px-4 py-3 text-gray-700 font-semibold">
+                        File
+                      </th>
+
+                      <th className="text-left px-4 py-3 text-gray-700 font-semibold">
+                          Type
+                      </th>
+
+                      <th className="text-left px-4 py-3 text-gray-700 font-semibold">
+                          Uploaded
+                      </th>
+
+                      <th className="text-left px-4 py-3 text-gray-700 font-semibold">
+                          Actions
+                      </th>
+
+                     </tr>
+
+                  </thead>
+
+                  <tbody>
+
+                     {filesData?.files?.map((file) => (
+
+                     <tr
+                        key={file._id}
+                        className="border-b border-gray-200 hover:bg-gray-50 transition"
+                     >
+
+                     {/* FILE NAME */}
+
+                     <td className="px-4 py-4">
+
+                        <div className="flex items-center gap-3">
+
+                           <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center text-xl">
+
+                              {file.fileType?.startsWith("image")
+                                 ? "🖼️"
+                                 : file.fileType?.includes("pdf")
+                                 ? "📄"
+                                 : "📁"}
+
+                           </div>
+
+                           <div className="max-w-[200px]">
+
+                              <p className="font-medium text-gray-800 truncate">
+                                 {file.public_id?.split("/").pop()}
+                              </p>
+
+                              <p className="text-xs text-gray-500 truncate">
+                                 {file.fileType}
+                              </p>
+
+                           </div>
+
+                        </div>
+
+                     </td>
+
+                     {/* TYPE */}
+
+                     <td className="px-4 py-4">
+
+                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+
+                           {file.fileType?.split("/")[0]}
+
+                        </span>
+
+                     </td>
+
+                     {/* DATE */}
+
+                     <td className="px-4 py-4 text-sm text-gray-600">
+
+                        {new Date(file.createdAt).toLocaleDateString()}
+
+                     </td>
+
+                     {/* ACTIONS */}
+
+                     <td className="px-4 py-4">
+
+                        <div className="flex items-center gap-3">
+
+                           {/* VIEW */}
+
+                          <button
+                              onClick={() => setSelectedFile(file)}
+                              className="flex-1 text-center bg-blue-50 text-blue-600 py-2 rounded-lg hover:bg-blue-100 transition font-medium"
+                           >
+                             View
+                          </button>
+
+                           {/* DELETE */}
+
+                           <button
+                              onClick={() => handleDeleteFile(file._id)}
+                              className="px-4 py-2 rounded-lg border border-red-500 text-red-600 hover:bg-red-50 transition text-sm font-medium"
+                           >
+                              Delete
+                           </button>
+
+                        </div>
+
+                     </td>
+
+                     </tr>
+                 ))}
+
+                 </tbody>
+                </table>
+               )}
+
          </div>
 
       </div>
-   );
+
+      {/* FILE VIEWER MODAL */}
+
+       {selectedFile && (
+
+            <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+
+                 <div className="bg-white rounded-2xl w-full max-w-5xl max-h-[90vh] overflow-hidden relative">
+
+                   {/* HEADER */}
+
+                   <div className="flex items-center justify-between border-b px-5 py-4">
+
+                      <h2 className="font-semibold text-gray-800 truncate">
+
+                           {selectedFile.public_id?.split("/").pop()}
+
+                      </h2>
+
+                      <button
+                           onClick={() => setSelectedFile(null)}
+                           className="text-2xl text-gray-500 hover:text-black"
+                       >
+                           ✕
+                       </button>
+
+                     </div>
+
+                     {/* CONTENT */}
+
+                     <div className="h-[80vh] overflow-auto bg-gray-100 flex items-center justify-center">
+
+                     {/* IMAGE */}
+
+                     {selectedFile.fileType?.startsWith("image") && (
+
+                        <img
+                         src={selectedFile.url}
+                         alt=""
+                         className="max-w-full max-h-full object-contain"
+                        />
+
+                     )}
+
+                     {/* PDF */}
+
+                     {selectedFile.fileType?.includes("pdf") && (
+
+                         <iframe
+                            src={selectedFile.url}
+                            title="PDF Viewer"
+                            className="w-full h-full"
+                          />
+
+                     )}
+
+                     {/* OTHER FILES */}
+
+                         {!selectedFile.fileType?.startsWith("image") &&
+                           !selectedFile.fileType?.includes("pdf") && (
+
+                        <div className="text-center p-10">
+
+                            <div className="text-6xl">
+                                 📁
+                            </div>
+
+                            <p className="mt-4 text-gray-600">
+                               Preview not available for this file type
+                             </p>
+
+                             <a
+                               href={selectedFile.url}
+                               target="_blank"
+                               rel="noreferrer"
+                               className="inline-block mt-5 bg-blue-600 text-white px-5 py-3 rounded-xl"
+                             >
+                                Open File
+                              </a>
+                        </div>
+                     )}
+               </div>
+            </div>
+         </div>
+      )}
+   </div>
+   </div>
+ );
 };
 
 export default UserProfile;

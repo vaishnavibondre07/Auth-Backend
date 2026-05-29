@@ -3,16 +3,18 @@ import { authApi } from "../api/authApi";
 import { profileApi } from "../api/profileApi";
 import { setupListeners } from "@reduxjs/toolkit/query";
 import authReducer from "../features/authSlice";
+import { fileApi } from "../api/fileApi";
 
 export const store = configureStore({
     reducer : {
         auth : authReducer,
         [authApi.reducerPath] : authApi.reducer,
-        [profileApi.reducerPath] : profileApi.reducer
+        [profileApi.reducerPath] : profileApi.reducer,
+        [fileApi.reducerPath] : fileApi.reducer
 
     },
 
-    middleware : (getDefaultMiddleware) => getDefaultMiddleware().concat(authApi.middleware, profileApi.middleware)
+    middleware : (getDefaultMiddleware) => getDefaultMiddleware().concat(authApi.middleware, profileApi.middleware, fileApi.middleware)
 });
 
 setupListeners(store.dispatch)
