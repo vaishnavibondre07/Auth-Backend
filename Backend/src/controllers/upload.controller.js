@@ -7,6 +7,8 @@ export const uploader = async (req, res) => {
 
     const files = req.files || (req.file ? [req.file] : []);
 
+    console.log("Received files:", files);
+
     // check files
     if (!files.length) {
       return res.status(400).json({
