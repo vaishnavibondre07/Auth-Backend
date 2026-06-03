@@ -1,9 +1,9 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { lazy, Suspense } from "react";
 
-import { VerifyEmail } from "./containers/verifyEmail";
-import { ForgotPassword } from "./containers/forgotPassword";
-import { AdminRoute } from "./routes/AdminRoutes";
+import VerifyEmail  from "./containers/verifyEmail";
+import  ForgotPassword  from "./containers/forgotPassword";
+import {AdminRoute } from "./routes/AdminRoutes";
 
 // LAZY LOADING
 const Register = lazy(() => import("./pages/Register"));

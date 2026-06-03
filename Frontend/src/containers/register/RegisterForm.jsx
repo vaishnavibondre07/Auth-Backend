@@ -1,3 +1,4 @@
+import React from "react";
 import AuthInput from "../../components/auth/AuthInput";
 import PasswordInput from "../../components/auth/PasswordInput";
 import AuthButton from "../../components/auth/AuthButton";
@@ -57,4 +58,4 @@ const RegisterForm = ({ form, handleChange, handleSubmit, isLoading, captcha, se
     );
 };
 
-export default RegisterForm;
+export default React.memo(RegisterForm);

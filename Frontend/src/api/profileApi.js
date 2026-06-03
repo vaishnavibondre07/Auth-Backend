@@ -26,7 +26,7 @@ export const profileApi = createApi({
                 url : `/admin/users?page=${page}&limit=${limit}`,
                 method : "GET"
             }),
-             providesTags: ['profile']
+             providesTags: ['Profile']
         })
     })
 });

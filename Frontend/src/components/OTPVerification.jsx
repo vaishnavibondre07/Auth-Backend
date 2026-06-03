@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
+import React from "react";
 
-export const OTPVerification = ({
+const OTPVerification = ({
   title = "Verify your email",
   subtitle = "We've sent a 6-digit code to",
   email = "",
@@ -177,3 +178,5 @@ export const OTPVerification = ({
     </div>
   );
 };
+
+export default React.memo(OTPVerification);

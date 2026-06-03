@@ -1,12 +1,10 @@
-import { useEffect, useState } from "react";
+import React ,{ useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-
-import { OTPVerification } from "../components/OTPVerification";
+import  OTPVerification  from "../components/OTPVerification";
 import  MessageBox  from "../components/MessageBox";
-
 import { useVerifyEmailMutation, useResendOTPMutation} from "../api/authApi";
 
-export const VerifyEmail = () => {
+const VerifyEmail = () => {
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -123,3 +121,5 @@ export const VerifyEmail = () => {
         </div>
     );
 };
+
+export default React.memo(VerifyEmail);

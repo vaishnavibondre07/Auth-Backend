@@ -1,4 +1,5 @@
-import { LoginUser } from "../containers/login";
+import React from "react";
+import  LoginUser  from "../containers/login";
 
 const Login = () => {
 
@@ -7,4 +8,4 @@ const Login = () => {
     )
 }
 
-export default Login;   
+export default React.memo(Login);   

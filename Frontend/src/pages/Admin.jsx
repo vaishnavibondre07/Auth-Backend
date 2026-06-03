@@ -1,4 +1,5 @@
-import { AdminDashboard } from "../containers/adminDashboard";
+import React from "react";
+import AdminDashboard  from "../containers/adminDashboard";
 
 const Admin = () => {
 
@@ -9,5 +10,5 @@ const Admin = () => {
     )
 }
 
-export default Admin;   
+export default React.memo(Admin);   
   

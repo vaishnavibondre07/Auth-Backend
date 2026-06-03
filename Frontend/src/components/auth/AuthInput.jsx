@@ -1,3 +1,5 @@
+import React from "react";
+
 const AuthInput = ({ label, name, value, placeholder, onChange, type = "text" }) => {
     return (
         <div>
@@ -16,4 +18,4 @@ const AuthInput = ({ label, name, value, placeholder, onChange, type = "text" })
     );
 };
 
-export default AuthInput;
+export default React.memo(AuthInput);

@@ -1,15 +1,12 @@
-import { useEffect, useState } from "react";
+import React from "react";
+import { useEffect, useState, useCallback} from "react";
 import { useNavigate } from "react-router-dom";
-import { OTPVerification } from "../components/OTPVerification";
-import  MessageBox  from "../components/MessageBox";
+import  OTPVerification from "../components/OTPVerification";
+import MessageBox from "../components/MessageBox";
 
-import {
-    useForgotPasswordMutation,
-    useVerifyForgotPasswordOTPMutation,
-    useResetPasswordMutation
-} from "../api/authApi";
+import { useForgotPasswordMutation, useVerifyForgotPasswordOTPMutation, useResetPasswordMutation} from "../api/authApi";
 
-export function ForgotPassword() {
+const ForgotPassword = () =>{
 
     const navigate = useNavigate();
 
@@ -48,7 +45,7 @@ export function ForgotPassword() {
     };
 
     // STEP 1
-    const handleSendOtp = async (e) => {
+    const handleSendOtp = useCallback(async (e) => {
         e.preventDefault();
 
         if (!email.includes("@")) {
@@ -71,10 +68,10 @@ export function ForgotPassword() {
         } finally {
             setLoading(false);
         }
-    };
+    });
 
     // RESEND OTP
-    const handleResendOtp = async () => {
+    const handleResendOtp = useCallback(async () => {
         try {
             await forgotPassword({ email }).unwrap();
 
@@ -86,10 +83,10 @@ export function ForgotPassword() {
         } catch {
             showMessage("error", "Failed to resend OTP");
         }
-    };
+    });
 
     // STEP 2
-    const handleVerifyOtp = async (otp) => {
+    const handleVerifyOtp = useCallback(async (otp) => {
 
         if (!otp) {
             showMessage("error", "Enter OTP");
@@ -110,10 +107,10 @@ export function ForgotPassword() {
         } finally {
             setLoading(false);
         }
-    };
+    });
 
     // STEP 3
-    const handleResetPassword = async (e) => {
+    const handleResetPassword = useCallback(async (e) => {
         e.preventDefault();
 
         if (!password) {
@@ -135,7 +132,7 @@ export function ForgotPassword() {
         } finally {
             setLoading(false);
         }
-    };
+    });
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-8">
@@ -243,6 +240,7 @@ export function ForgotPassword() {
     );
 }
 
+export default React.memo(ForgotPassword);
 
 
 // import { useState } from "react";

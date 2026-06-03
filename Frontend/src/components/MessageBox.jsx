@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import React from "react";
 
 const MessageBox = ({ type = "success", text, onClose }) => {
     useEffect(() => {
@@ -24,4 +25,4 @@ const MessageBox = ({ type = "success", text, onClose }) => {
     );
 };
 
-export default MessageBox;
+export default React.memo(MessageBox);

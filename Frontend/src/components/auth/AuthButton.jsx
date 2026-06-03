@@ -1,3 +1,5 @@
+import React from "react";
+
 const AuthButton = ({ text = "Submit", loading = false, type = "submit", onClick, disabled = false, className = ""}) => {
     return (
         <button
@@ -18,4 +20,4 @@ const AuthButton = ({ text = "Submit", loading = false, type = "submit", onClick
     );
 };
 
-export default AuthButton;
+export default React.memo(AuthButton);

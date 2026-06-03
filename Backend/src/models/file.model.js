@@ -2,6 +2,11 @@ import mongoose from "mongoose";
 
 const fileSchema = new mongoose.Schema({
 
+  originalName: {
+    type: String,
+    required: true,
+  },
+
   url: {
     type: String,
     required: true,
@@ -14,6 +19,10 @@ const fileSchema = new mongoose.Schema({
 
   fileType: {
     type: String, // image, pdf, video
+  },
+
+  resourceType: {
+    type: String, // image, raw, video
   },
 
   uploadedBy: {

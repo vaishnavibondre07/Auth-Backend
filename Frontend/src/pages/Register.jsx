@@ -1,3 +1,4 @@
+import React from "react";
 import RegisterUser from "../containers/register";
 
 const Register = () => {
@@ -9,5 +10,5 @@ const Register = () => {
     )
 }
 
-export default Register;
+export default React.memo(Register);
 

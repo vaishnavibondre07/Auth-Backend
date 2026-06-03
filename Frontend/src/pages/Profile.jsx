@@ -1,3 +1,4 @@
+import React from "react";
 import UserProfile from "../containers/userProfile"
 
 const Profile = () => {
@@ -6,4 +7,4 @@ const Profile = () => {
    )
 }
 
-export default Profile;
+export default React.memo(Profile);

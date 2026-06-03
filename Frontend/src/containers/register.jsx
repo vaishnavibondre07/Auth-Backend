@@ -1,9 +1,8 @@
-import { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
-import MessageBox from "../components/MessageBox";
-import RegisterForm from "../containers/register/RegisterForm";
-import SocialLogin from "../containers/register/SocialLogin";
+import  MessageBox from "../components/MessageBox";
+import  RegisterForm from "../containers/register/RegisterForm";
+import  SocialLogin  from "../containers/register/SocialLogin";
 
 import { useCreateCaptchaMutation, useRegisterUserMutation, useGoogleLoginMutation } from "../api/authApi";
 
@@ -31,10 +30,10 @@ const RegisterUser = () => {
     const [createCaptcha] = useCreateCaptchaMutation();
     const [googleLogin] = useGoogleLoginMutation();
 
-    const handleChange = (e) => {
+    const handleChange = useCallback((e) => {
         const { name, value } = e.target;
         setForm((prev) => ({ ...prev, [name]: value }));
-    };
+    });
 
     const fetchCaptcha = useCallback(async () => {
         try {
@@ -56,7 +55,7 @@ const RegisterUser = () => {
         fetchCaptcha();
     }, [fetchCaptcha]);
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = useCallback(async (e) => {
         e.preventDefault();
 
         const { username, email, password, confirmPassword } = form;
@@ -102,7 +101,7 @@ const RegisterUser = () => {
 
             fetchCaptcha();
         }
-    };
+    });
 
     return (
         <main className="min-h-screen flex items-center justify-center bg-linear-to-br from-sky-100 via-blue-50 to-cyan-100 px-4 py-8">
@@ -159,7 +158,7 @@ const RegisterUser = () => {
     );
 };
 
-export default RegisterUser;
+export default React.memo(RegisterUser);
 
 
 

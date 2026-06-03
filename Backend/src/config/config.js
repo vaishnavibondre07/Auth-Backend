@@ -36,9 +36,6 @@ if (!process.env.SECRET_KEY) {
     throw new Error("SECRET_KEY is not defined in .env file");
 }
 
-if(!process.env.RESEND_API_KEY){
-    throw new Error("RESEND_API_KEY is not defined");
-}
 
 if(!process.env.BREVO_API_KEY){
     throw new Error("BREVO_API_KEY is not defined")
@@ -66,7 +63,6 @@ const config = {
     GOOGLE_USER: process.env.GOOGLE_USER,
     SITE_KEY: process.env.SITE_KEY,
     SECRET_KEY: process.env.SECRET_KEY,
-    RESEND_API_KEY: process.env.RESEND_API_KEY,
     BREVO_API_KEY: process.env.BREVO_API_KEY,
     CLOUD_NAME: process.env.CLOUD_NAME,
     CLOUD_API_KEY: process.env.CLOUD_API_KEY,

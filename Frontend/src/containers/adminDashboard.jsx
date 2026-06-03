@@ -1,11 +1,13 @@
-import { useState } from "react";
+import React from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGetAllUsersQuery } from "../api/profileApi";
 import MessageBox from "../components/MessageBox";
 import { useSessionChecker } from "../hook/useSessionChecker";
 
 
-export const AdminDashboard = () => {
+
+const AdminDashboard = () => {
 
     useSessionChecker();
 
@@ -20,8 +22,8 @@ export const AdminDashboard = () => {
     const [message, setMessage] = useState({type : "" ,text : ""})
     
  
-    const filteredUsers = data?.data?.filter((user) => {
-
+    const filteredUsers = useMemo(() => {
+    return data?.data?.filter((user) => {
         const matchesSearch =
             user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
             user.email.toLowerCase().includes(searchTerm.toLowerCase());
@@ -34,8 +36,29 @@ export const AdminDashboard = () => {
             (verificationFilter === "verified" && user.verified) ||
             (verificationFilter === "notVerified" && !user.verified);
 
-        return matchesSearch && matchesRole && matchesVerification;
-    });
+        return (
+            matchesSearch &&
+            matchesRole &&
+            matchesVerification
+        );
+    }) || [];
+}, [data, searchTerm, roleFilter, verificationFilter]);
+    // const filteredUsers = useMemo(() => data?.data?.filter((user) =>() => {
+
+    //     const matchesSearch =
+    //         user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    //         user.email.toLowerCase().includes(searchTerm.toLowerCase());
+
+    //     const matchesRole =
+    //         roleFilter === "all" || user.role === roleFilter;
+
+    //     const matchesVerification =
+    //         verificationFilter === "all" ||
+    //         (verificationFilter === "verified" && user.verified) ||
+    //         (verificationFilter === "notVerified" && !user.verified);
+
+    //     return matchesSearch && matchesRole && matchesVerification;
+    // }));
 
     const totalPages = data?.totalPages || 1;
 
@@ -310,6 +333,7 @@ export const AdminDashboard = () => {
     );
 };
 
+export default React.memo(AdminDashboard);
 
 // import { useState } from "react";
 // import { useNavigate } from "react-router-dom";

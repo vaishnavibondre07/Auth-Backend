@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import React ,{ useEffect, useState, useCallback} from "react";
 import { useLoginUserMutation, useCreateCaptchaMutation, useGoogleLoginMutation , useResendOTPMutation} from "../api/authApi";
 import MessageBox from "../components/MessageBox";
 import { validateEmail, validatePassword } from "../utils/validations";
@@ -11,7 +11,7 @@ import PasswordInput from "../components/auth/PasswordInput";
 import CaptchaBox from "../components/auth/CaptchaBox";
 import AuthButton from "../components/auth/AuthButton";
 
-export const LoginUser = () => {
+const LoginUser = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -27,20 +27,20 @@ export const LoginUser = () => {
   const [captcha, setCaptcha] = useState({ question: "", answer: "", id: "" });
   const [message, setMessage] = useState({ type: "", text: "" });
 
-  const fetchCaptcha = async () => {
+  const fetchCaptcha = useCallback(async () => {
     try {
       const res = await createCaptcha().unwrap();
       setCaptcha({ question: res.question, id: res.captchaId, answer: "" });
     } catch {
       setMessage({ type: "error", text: "Failed to load captcha" });
     }
-  };
+  });
 
   useEffect(() => {
     fetchCaptcha();
   }, []);
 
-  const handleLogin = async (e) => {
+  const handleLogin = useCallback(async (e) => {
     e.preventDefault();
     setMessage({ type: "", text: "" });
 
@@ -86,7 +86,7 @@ export const LoginUser = () => {
 
         fetchCaptcha();
     }
-  };
+  });
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-8">
@@ -189,6 +189,7 @@ export const LoginUser = () => {
   );
 };
 
+export default React.memo(LoginUser);
 
 // import { Link, useNavigate } from "react-router-dom";
 // import { useEffect, useState } from "react";

@@ -25,13 +25,16 @@ export const uploader = async (req, res) => {
       const result = await uploadFile(file.buffer);
 
       console.log("result:", result);
+      console.log(result);
 
       // save in database
       const savedFile = await File.create({
         url: result.secure_url || result.url,
         public_id: result.public_id,
         fileType: file.mimetype,
+        resourceType: file.resource_type,
         uploadedBy: req.user.id,
+        originalName: file.originalname,
       });
 
       uploadedFiles.push(savedFile);
@@ -107,7 +110,12 @@ export const deleteFile = async (req, res) => {
     }
 
     // delete from cloudinary
-    await cloudinary.uploader.destroy(file.public_id);
+    await cloudinary.uploader.destroy(
+        file.public_id,
+        {
+           resource_type: file.resourceType,
+        }
+    );
 
     // delete from db
     await File.findByIdAndDelete(id);
