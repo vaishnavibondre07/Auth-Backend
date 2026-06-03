@@ -27,8 +27,16 @@ export const profileApi = createApi({
                 method : "GET"
             }),
              providesTags: ['Profile']
-        })
+        }),
+
+        getUserFilesByAdmin : builder.query({
+            query : (userId) => ({
+                url : `/admin/users/${userId}/files`,
+                method : "GET"
+            }),
+             providesTags: ['Profile']
+         })
     })
 });
 
-export const { useGetProfileQuery, useGetAllUsersQuery } = profileApi;
+export const { useGetProfileQuery, useGetAllUsersQuery, useGetUserFilesByAdminQuery } = profileApi;

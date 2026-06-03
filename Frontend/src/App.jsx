@@ -4,6 +4,8 @@ import { lazy, Suspense } from "react";
 import VerifyEmail  from "./containers/verifyEmail";
 import  ForgotPassword  from "./containers/forgotPassword";
 import {AdminRoute } from "./routes/AdminRoutes";
+import AdminUserDetails from "./pages/AdminUserDetails";
+import AdminUserFiles from "./pages/AdminUserFiles";
 
 // LAZY LOADING
 const Register = lazy(() => import("./pages/Register"));
@@ -38,6 +40,10 @@ function App() {
                     <Route path="/profile" element={<Profile />} />
 
                     <Route path="/admin" element={ <AdminRoute> <Admin /> </AdminRoute> } />
+
+                    <Route path="/admin/user/:id" element={< AdminRoute><AdminUserDetails /> </AdminRoute>}/>
+
+                   <Route path="/admin/user/:id/files" element={ <AdminRoute> <AdminUserFiles /> </AdminRoute>}/>
 
                 </Routes>
             </Suspense>

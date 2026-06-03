@@ -43,22 +43,6 @@ const AdminDashboard = () => {
         );
     }) || [];
 }, [data, searchTerm, roleFilter, verificationFilter]);
-    // const filteredUsers = useMemo(() => data?.data?.filter((user) =>() => {
-
-    //     const matchesSearch =
-    //         user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    //         user.email.toLowerCase().includes(searchTerm.toLowerCase());
-
-    //     const matchesRole =
-    //         roleFilter === "all" || user.role === roleFilter;
-
-    //     const matchesVerification =
-    //         verificationFilter === "all" ||
-    //         (verificationFilter === "verified" && user.verified) ||
-    //         (verificationFilter === "notVerified" && !user.verified);
-
-    //     return matchesSearch && matchesRole && matchesVerification;
-    // }));
 
     const totalPages = data?.totalPages || 1;
 
@@ -158,153 +142,229 @@ const AdminDashboard = () => {
 
                 </div>
 
-                {/* MOBILE CARDS */}
-                <div className="md:hidden space-y-4">
-                    {filteredUsers?.length > 0 ? (
-                        filteredUsers.map((user, index) => (
-                            <article
-                                key={user._id}
-                                className="border rounded-xl p-4 bg-gray-50/80 space-y-3"
-                            >
-                                <div className="flex items-start justify-between gap-2">
-                                    <div className="min-w-0">
-                                        <p className="text-xs text-gray-500">{(page - 1) * 10 + index + 1}</p>
-                                        <h3 className="font-semibold text-gray-900 truncate">
-                                            {user.username}
-                                        </h3>
-                                        <p className="text-sm text-gray-600 break-all">{user.email}</p>
-                                    </div>
-                                    <span
-                                        className={`shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold
-                                            ${user.role === "admin"
-                                                ? "bg-red-100 text-red-700"
-                                                : "bg-blue-100 text-blue-700"
-                                            }`}
-                                    >
-                                        {user.role}
-                                    </span>
-                                </div>
-                                <div className="flex flex-wrap gap-2 text-sm">
-                                    <span
-                                        className={
-                                            user.verified
-                                                ? "text-green-600 font-medium"
-                                                : "text-red-500 font-medium"
-                                        }
-                                    >
-                                        {user.verified ? "Verified" : "Not Verified"}
-                                    </span>
-                                    <span className="text-gray-400">·</span>
-                                    <span className="text-gray-600">
-                                        {user.createdAt
-                                            ? new Date(user.createdAt).toLocaleDateString()
-                                            : "N/A"}
-                                    </span>
-                                </div>
-                            </article>
-                        ))
-                    ) : (
-                        <p className="text-center py-10 text-gray-500">No users found</p>
-                    )}
-                </div>
+                {/* USERS LIST */}
 
-                {/* DESKTOP TABLE */}
-                <div className="hidden md:block overflow-x-auto rounded-xl border">
+<div className="mt-6">
 
-                    <table className="w-full border-collapse">
+  {filteredUsers?.length > 0 ? (
 
-                        {/* HEADER */}
-                        <thead>
-                            <tr className="bg-blue-600 text-white">
+    <>
+      {/* MOBILE VIEW */}
+      <div className="md:hidden space-y-4">
 
-                                <th className="p-4 text-left">Sr no.</th>
-                                <th className="p-4 text-left">Username</th>
-                                <th className="p-4 text-left">Email</th>
-                                <th className="p-4 text-left">Role</th>
-                                <th className="p-4 text-left">Verified</th>
-                                <th className="p-4 text-left">Created At</th>
+        {filteredUsers.map((user, index) => (
 
-                            </tr>
-                        </thead>
+          <div
+            key={user._id}
+            className="bg-white border rounded-xl p-4 shadow-sm"
+          >
 
-                        {/* BODY */}
-                        <tbody>
+            <div className="flex justify-between items-start">
 
-                            {filteredUsers?.length > 0 ? (
+              <div>
 
-                                filteredUsers.map((user, index) => (
+                <p className="text-xs text-gray-500">
+                  #{(page - 1) * 10 + index + 1}
+                </p>
 
-                                    <tr
-                                        key={user._id}
-                                        className="border-b hover:bg-gray-50 transition"
-                                    >
+                <h3 className="font-semibold text-lg text-gray-800">
+                  {user.username}
+                </h3>
 
-                                        {/* SERIAL */}
-                                        <td className="p-4 font-medium text-gray-700">
-                                            {(page - 1) * 10 + index + 1}
-                                        </td>
+              </div>
 
-                                        {/* USERNAME */}
-                                        <td className="p-4 font-medium text-gray-800">
-                                            {user.username}
-                                        </td>
+              <span
+                className={`px-3 py-1 rounded-full text-xs font-semibold
+                ${
+                  user.role === "admin"
+                    ? "bg-red-100 text-red-700"
+                    : "bg-blue-100 text-blue-700"
+                }`}
+              >
+                {user.role}
+              </span>
 
-                                        {/* EMAIL */}
-                                        <td className="p-4 text-gray-600">
-                                            {user.email}
-                                        </td>
+            </div>
 
-                                        {/* ROLE */}
-                                        <td className="p-4">
-                                            <span className={`px-3 py-1 rounded-full text-sm font-semibold
-                                                ${user.role === "admin"
-                                                    ? "bg-red-100 text-red-700"
-                                                    : "bg-blue-100 text-blue-700"
-                                                }`}
-                                            >
-                                                {user.role}
-                                            </span>
-                                        </td>
+            <p className="text-gray-600 mt-3 break-all">
+              {user.email}
+            </p>
 
-                                        {/* VERIFIED */}
-                                        <td className="p-4">
-                                            {user.verified ? (
-                                                <span className="text-green-600 font-semibold">
-                                                    Verified
-                                                </span>
-                                            ) : (
-                                                <span className="text-red-500 font-semibold">
-                                                    Not Verified
-                                                </span>
-                                            )}
-                                        </td>
+            <div className="mt-3 flex items-center gap-2">
 
-                                        {/* CREATED AT */}
-                                        <td className="p-4 text-gray-600">
-                                            {user.createdAt
-                                                ? new Date(user.createdAt).toLocaleDateString()
-                                                : "N/A"}
-                                        </td>
+              {user.verified ? (
+                <span className="text-green-600 text-sm font-medium">
+                  ✓ Verified
+                </span>
+              ) : (
+                <span className="text-red-500 text-sm font-medium">
+                  ✗ Not Verified
+                </span>
+              )}
 
-                                    </tr>
+            </div>
 
-                                ))
+            <p className="text-sm text-gray-500 mt-2">
+              Joined:{" "}
+              {user.createdAt
+                ? new Date(user.createdAt).toLocaleDateString()
+                : "N/A"}
+            </p>
 
-                            ) : (
+            <div className="grid grid-cols-2 gap-2 mt-4">
 
-                                <tr>
-                                    <td colSpan="7" className="text-center py-10 text-gray-500">
-                                        No users found
-                                    </td>
-                                </tr>
+              <button
+                onClick={() =>
+                  navigate(`/admin/user/${user._id}`)
+                }
+                className="bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
+              >
+                Details
+              </button>
 
-                            )}
+              <button
+                onClick={() =>
+                  navigate(`/admin/user/${user._id}/files`)
+                }
+                className="bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition"
+              >
+                Files
+              </button>
 
-                        </tbody>
+            </div>
 
-                    </table>
+          </div>
 
-                </div>
+        ))}
+
+      </div>
+
+      {/* DESKTOP VIEW */}
+      <div className="hidden md:block overflow-x-auto rounded-xl border">
+
+        <table className="w-full border-collapse">
+
+          <thead>
+
+            <tr className="bg-blue-600 text-white">
+
+              <th className="p-4 text-left">Sr No.</th>
+              <th className="p-4 text-left">Username</th>
+              <th className="p-4 text-left">Email</th>
+              <th className="p-4 text-left">Role</th>
+              <th className="p-4 text-left">Verified</th>
+              <th className="p-4 text-left">Created At</th>
+              <th className="p-4 text-left">Actions</th>
+
+            </tr>
+
+          </thead>
+
+          <tbody>
+
+            {filteredUsers.map((user, index) => (
+
+              <tr
+                key={user._id}
+                className="border-b hover:bg-gray-50 transition"
+              >
+
+                <td className="p-4">
+                  {(page - 1) * 10 + index + 1}
+                </td>
+
+                <td className="p-4 font-medium">
+                  {user.username}
+                </td>
+
+                <td className="p-4">
+                  {user.email}
+                </td>
+
+                <td className="p-4">
+
+                  <span
+                    className={`px-3 py-1 rounded-full text-sm font-semibold
+                    ${
+                      user.role === "admin"
+                        ? "bg-red-100 text-red-700"
+                        : "bg-blue-100 text-blue-700"
+                    }`}
+                  >
+                    {user.role}
+                  </span>
+
+                </td>
+
+                <td className="p-4">
+
+                  {user.verified ? (
+                    <span className="text-green-600 font-semibold">
+                      Verified
+                    </span>
+                  ) : (
+                    <span className="text-red-500 font-semibold">
+                      Not Verified
+                    </span>
+                  )}
+
+                </td>
+
+                <td className="p-4">
+
+                  {user.createdAt
+                    ? new Date(user.createdAt).toLocaleDateString()
+                    : "N/A"}
+
+                </td>
+
+                <td className="p-4">
+
+                  <div className="flex gap-2">
+
+                    <button
+                      onClick={() =>
+                        navigate(`/admin/user/${user._id}`)
+                      }
+                      className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                    >
+                      Details
+                    </button>
+
+                    <button
+                      onClick={() =>
+                        navigate(`/admin/user/${user._id}/files`)
+                      }
+                      className="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                    >
+                      Files
+                    </button>
+
+                  </div>
+
+                </td>
+
+              </tr>
+
+            ))}
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </>
+
+  ) : (
+
+    <div className="text-center py-10 text-gray-500">
+      No users found
+    </div>
+
+  )}
+
+</div>
 
                 <div className="flex items-center justify-center gap-4 mt-6">
 

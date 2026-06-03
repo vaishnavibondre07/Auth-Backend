@@ -1,5 +1,6 @@
 import User from "../models/user.models.js";
 import { getPagination } from "../utils/pagination.js";
+import File from "../models/file.model.js";
 
 export async function getProfile(req, res){
     try {
@@ -60,6 +61,37 @@ export async function getAllUsers(req, res){
         });
 
     } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+}
+
+export async function getUserFilesByAdmin(req, res){
+    try {
+
+        console.log("Admin fetching files for user ID:", req.params.id);
+        const userId = req.params.id;
+        console.log("Fetching files for user ID:", userId);
+
+        const files = await File.find({
+              uploadedBy: userId,
+        }).sort({ createdAt: -1 });
+
+        console.log(`Found ${files.length} files for user ID ${userId}`);
+
+        return res.status(200).json({
+            success: true,
+            data: {
+                success: true,
+                count: files.length,
+                files,
+            }
+        });
+
+    } catch (error) {
+        console.log("Get User Files By Admin Error:", error);
         return res.status(500).json({
             success: false,
             message: error.message
