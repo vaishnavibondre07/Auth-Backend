@@ -6,8 +6,8 @@ import Session from "../models/session.model.js";
 import { googleClient } from "../config/googleClient.js";
 import { sendEmail } from "../services/email.service.js";
 import {generateOTP, generateOTPHtml } from "../utils/otpGeneration.js";
-import otpModel from "../models/otp.model.js";
-import userModel from "../models/user.models.js";
+import Otp from "../models/otp.model.js";
+
 import axios from "axios";
 import { generateCaptcha } from "../utils/captchaGeneration.js";
 import captcha from "../models/captcha.model.js";
@@ -121,7 +121,7 @@ export async function registerUser(req, res) {
 
     const otpHash = await bcrypt.hash(otp.toString(), 10);
     
-    await otpModel.create({
+    await Otp.create({
         email,
         user: user._id,
         otpHash,
@@ -505,7 +505,7 @@ export async function verifyEmail(req, res) {
 
         const { email, otp } = req.body;
 
-        const otpDoc = await otpModel.findOne({ email });
+        const otpDoc = await Otp.findOne({ email });
 
         if (!otpDoc) {
             return res.status(400).json({
@@ -518,7 +518,7 @@ export async function verifyEmail(req, res) {
         // OTP EXPIRY CHECK
         if (otpDoc.expiresAt < new Date()) {
 
-              await otpModel.deleteMany({
+              await Otp.deleteMany({
                 email,
                 purpose: "EMAIL_VERIFICATION"
             });
@@ -565,7 +565,7 @@ export async function verifyEmail(req, res) {
         }
 
         // VERIFY USER
-        const user = await userModel.findByIdAndUpdate(
+        const user = await User.findByIdAndUpdate(
             otpDoc.user,
             { verified: true },
             { returnDocument: "after" }
@@ -583,7 +583,7 @@ export async function verifyEmail(req, res) {
 
 
         if (user.verified === true) {
-          await otpModel.deleteMany({
+          await Otp.deleteMany({
             user: otpDoc.user
         });
 
@@ -642,11 +642,11 @@ export async function resendOtp(req, res) {
   try {
     const { email } = req.body;
 
-    let otpData = await otpModel.findOne({ email });
+    let otpData = await Otp.findOne({ email });
 
     // CREATE IF NOT EXISTS ← only change
     if (!otpData) {
-      const user = await userModel.findOne({ email });
+      const user = await User.findOne({ email });
 
       if (!user) {
         return res.status(404).json({ success: false, message: "User not found" });
@@ -655,15 +655,15 @@ export async function resendOtp(req, res) {
       const otp = generateOTP();
       const hashedOtp = await bcrypt.hash(otp, 10);
 
-      await otpModel.create({
+      await sendEmail(email, "Verify your email", "", generateOTPHtml(otp));
+
+      await Otp.create({
         email,
         user: user._id,
         otpHash: hashedOtp,
         purpose: "EMAIL_VERIFICATION",
         expiresAt: new Date(Date.now() + 60 * 1000),
       });
-
-      await sendEmail(email, "Verify your email", "", generateOTPHtml(otp));
 
       return res.status(200).json({ success: true, message: "OTP sent successfully" });
     }
@@ -698,13 +698,13 @@ export async function resendOtp(req, res) {
     const otp = generateOTP();
     const hashedOtp = await bcrypt.hash(otp, 10);
 
+    await sendEmail(email, "Resend OTP", "", generateOTPHtml(otp));
+
     otpData.otpHash = hashedOtp;
     otpData.expiresAt = new Date(Date.now() + 30 * 1000);
     otpData.resendCount += 1;
 
     await otpData.save();
-
-    await sendEmail(email, "Resend OTP", "", generateOTPHtml(otp));
 
     return res.status(200).json({ success: true, message: "OTP resent successfully" });
 
@@ -747,7 +747,7 @@ export async function forgotPassword(req, res) {
       const hashedOTP = await bcrypt.hash(otp, 10);
 
       // 5. Delete old OTPs
-      await otpModel.deleteMany({
+      await Otp.deleteMany({
          email,
          purpose: "FORGOT_PASSWORD"
       });
@@ -761,7 +761,7 @@ export async function forgotPassword(req, res) {
       );
 
       // 6. Save OTP
-      await otpModel.create({
+      await Otp.create({
          email,
          user: user._id,
          otpHash: hashedOTP,
@@ -800,7 +800,7 @@ export async function verifyForgotPasswordOTP(req, res) {
         }
 
         // FIND OTP
-        const otpDoc = await otpModel.findOne({
+        const otpDoc = await Otp.findOne({
             email,
             purpose: "FORGOT_PASSWORD"
         });
@@ -831,7 +831,7 @@ export async function verifyForgotPasswordOTP(req, res) {
         // OTP EXPIRY CHECK
         if (otpDoc.expiresAt < new Date()) {
 
-            await otpModel.deleteMany({
+            await Otp.deleteMany({
                 email,
                 purpose: "FORGOT_PASSWORD"
             });
@@ -882,7 +882,7 @@ export async function verifyForgotPasswordOTP(req, res) {
         await otpDoc.save();
 
         // FIND USER
-        const user = await userModel.findOne({ email });
+        const user = await User.findOne({ email });
 
         if (!user) {
             return res.status(404).json({
@@ -982,7 +982,7 @@ export async function resetPassword(req, res) {
         }
 
         // FIND USER
-        const user = await userModel.findById(
+        const user = await User.findById(
             decoded.userId
         );
 
@@ -1004,7 +1004,7 @@ export async function resetPassword(req, res) {
         await user.save();
 
         // DELETE FORGOT PASSWORD OTPS
-        await otpModel.deleteMany({
+        await Otp.deleteMany({
             email: user.email,
             purpose: "FORGOT_PASSWORD"
         });
@@ -1175,106 +1175,3 @@ export const checkSession = async (req, res) => {
     });
   }
 };
-
-
-
-
-// export async function resendOtp(req, res) {
-
-//    try {
-
-//       const { email } = req.body;
-
-//       // FIND OTP DATA
-//       const otpData = await otpModel.findOne({ email });
-
-//       if (!otpData) {
-//          return res.status(404).json({
-//             success: false,
-//             message: "OTP data not found"
-//          });
-//       }
-
-//       // CHECK IF BLOCKED
-//       if (
-//          otpData.blockedUntil &&
-//          otpData.blockedUntil > new Date()
-//       ) {
-
-//          const remainingTime = Math.ceil(
-//             (otpData.blockedUntil - new Date()) / 1000
-//          );
-
-//          return res.status(429).json({
-//             success: false,
-//             message: `Too many attempts. Try again after ${remainingTime} sec`
-//          });
-//       }
-
-//       // RESET BLOCK AFTER TIME PASSES
-
-//       if ( otpData.blockedUntil && otpData.blockedUntil < new Date()) {
-//               otpData.blockedUntil = null;
-//               otpData.resendCount = 0;
-
-//               await otpData.save();
-//           }
-
-//       // CHECK RESEND LIMIT
-//       if (otpData.resendCount >= 5) {
-
-//          otpData.blockedUntil =
-//             new Date(Date.now() + 2 * 60 * 1000);
-
-//          await otpData.save();
-
-//          return res.status(429).json({
-//             success: false,
-//             message: "Too many resend attempts. Account blocked for 2 minutes"
-//          });
-//       }
-
-
-//       // GENERATE NEW OTP
-//       const otp = generateOTP();
-
-//       // HASH OTP
-//       const hashedOtp = await bcrypt.hash(otp, 10);
-
-//       // UPDATE OTP DATA
-//       otpData.otpHash = hashedOtp;
-
-//       // OTP VALID FOR 30 SEC
-//       otpData.expiresAt =
-//          new Date(Date.now() + 30 * 1000);
-
-//       // INCREASE RESEND COUNT
-//       otpData.resendCount += 1;
-
-//       await otpData.save();
-
-//       // SEND EMAIL
-//       await sendEmail(
-//          email,
-//          "Resend OTP",
-//           "",
-//          generateOTPHtml(otp)
-//       );
-
-//       return res.status(200).json({
-//          success: true,
-//          message: "OTP resent successfully"
-//       });
-
-//    } catch (error) {
-
-//       console.log(error);
-
-//       return res.status(500).json({
-//          success: false,
-//          message: "Internal Server Error"
-//       });
-
-//    }
-
-// };
